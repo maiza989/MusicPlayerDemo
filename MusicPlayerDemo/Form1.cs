@@ -26,6 +26,7 @@ namespace MusicPlayerDemo
             }
         }
 
+
         private void PlayCurrentTrack()
         {
             if (playlist != null && playlist.Length > 0 && currentTrackIndex < playlist.Length)
