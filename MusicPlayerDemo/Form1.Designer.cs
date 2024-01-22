@@ -1,0 +1,158 @@
+﻿namespace MusicPlayerDemo
+{
+    partial class Form1
+    {
+        /// <summary>
+        ///  Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        ///  Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        ///  Required method for Designer support - do not modify
+        ///  the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            menuStrip2 = new MenuStrip();
+            fileToolStripMenuItem = new ToolStripMenuItem();
+            openToolStripMenuItem = new ToolStripMenuItem();
+            exitToolStripMenuItem = new ToolStripMenuItem();
+            openFileDialog1 = new OpenFileDialog();
+            PlayButton = new Button();
+            PauseButton = new Button();
+            PreviousButton = new Button();
+            NextButton = new Button();
+            trackBar1 = new TrackBar();
+            menuStrip2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
+            SuspendLayout();
+            // 
+            // menuStrip2
+            // 
+            menuStrip2.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
+            menuStrip2.Location = new Point(0, 0);
+            menuStrip2.Name = "menuStrip2";
+            menuStrip2.Size = new Size(466, 24);
+            menuStrip2.TabIndex = 1;
+            menuStrip2.Text = "menuStrip2";
+            // 
+            // fileToolStripMenuItem
+            // 
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, exitToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new Size(37, 20);
+            fileToolStripMenuItem.Text = "File";
+            // 
+            // openToolStripMenuItem
+            // 
+            openToolStripMenuItem.Name = "openToolStripMenuItem";
+            openToolStripMenuItem.Size = new Size(103, 22);
+            openToolStripMenuItem.Text = "Open";
+            openToolStripMenuItem.Click += openToolStripMenuItem_Click;
+            // 
+            // exitToolStripMenuItem
+            // 
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.Size = new Size(103, 22);
+            exitToolStripMenuItem.Text = "Exit";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
+            // openFileDialog1
+            // 
+            openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // PlayButton
+            // 
+            PlayButton.Location = new Point(100, 194);
+            PlayButton.Name = "PlayButton";
+            PlayButton.Size = new Size(99, 23);
+            PlayButton.TabIndex = 2;
+            PlayButton.Text = "Play";
+            PlayButton.UseVisualStyleBackColor = true;
+            PlayButton.Click += PlayButton_Click;
+            // 
+            // PauseButton
+            // 
+            PauseButton.Location = new Point(285, 194);
+            PauseButton.Name = "PauseButton";
+            PauseButton.Size = new Size(99, 23);
+            PauseButton.TabIndex = 3;
+            PauseButton.Text = "Pause";
+            PauseButton.UseVisualStyleBackColor = true;
+            PauseButton.Click += PauseButton_Click;
+            // 
+            // PreviousButton
+            // 
+            PreviousButton.Location = new Point(52, 113);
+            PreviousButton.Name = "PreviousButton";
+            PreviousButton.Size = new Size(99, 23);
+            PreviousButton.TabIndex = 5;
+            PreviousButton.Text = "Previous";
+            PreviousButton.UseVisualStyleBackColor = true;
+            PreviousButton.Click += PreviousButton_Click;
+            // 
+            // NextButton
+            // 
+            NextButton.Location = new Point(326, 113);
+            NextButton.Name = "NextButton";
+            NextButton.Size = new Size(99, 23);
+            NextButton.TabIndex = 6;
+            NextButton.Text = "Next";
+            NextButton.UseVisualStyleBackColor = true;
+            NextButton.Click += NextButton_Click;
+            // 
+            // trackBar1
+            // 
+            trackBar1.Location = new Point(52, 143);
+            trackBar1.Name = "trackBar1";
+            trackBar1.Size = new Size(373, 45);
+            trackBar1.TabIndex = 7;
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(466, 308);
+            Controls.Add(trackBar1);
+            Controls.Add(NextButton);
+            Controls.Add(PreviousButton);
+            Controls.Add(PauseButton);
+            Controls.Add(PlayButton);
+            Controls.Add(menuStrip2);
+            Name = "Form1";
+            Text = "Form1";
+            menuStrip2.ResumeLayout(false);
+            menuStrip2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
+        }
+
+        #endregion
+        private MenuStrip menuStrip2;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem openToolStripMenuItem;
+        private ToolStripMenuItem exitToolStripMenuItem;
+        private OpenFileDialog openFileDialog1;
+        private Button PlayButton;
+        private Button PauseButton;
+        private Button PreviousButton;
+        private Button NextButton;
+        private TrackBar trackBar1;
+    }
+}
