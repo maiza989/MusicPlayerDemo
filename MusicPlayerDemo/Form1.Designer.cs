@@ -38,6 +38,9 @@
             PreviousButton = new Button();
             NextButton = new Button();
             trackBar1 = new TrackBar();
+            selectedFileLabel = new Label();
+            playlistCountLabel = new Label();
+            playlistComboBox = new ComboBox();
             menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
             SuspendLayout();
@@ -123,11 +126,38 @@
             trackBar1.Size = new Size(373, 45);
             trackBar1.TabIndex = 7;
             // 
+            // selectedFileLabel
+            // 
+            selectedFileLabel.AutoSize = true;
+            selectedFileLabel.Location = new Point(175, 70);
+            selectedFileLabel.Name = "selectedFileLabel";
+            selectedFileLabel.Size = new Size(0, 15);
+            selectedFileLabel.TabIndex = 8;
+            // 
+            // playlistCountLabel
+            // 
+            playlistCountLabel.AutoSize = true;
+            playlistCountLabel.Location = new Point(12, 24);
+            playlistCountLabel.Name = "playlistCountLabel";
+            playlistCountLabel.Size = new Size(0, 15);
+            playlistCountLabel.TabIndex = 10;
+            // 
+            // playlistComboBox
+            // 
+            playlistComboBox.FormattingEnabled = true;
+            playlistComboBox.Location = new Point(0, 42);
+            playlistComboBox.Name = "playlistComboBox";
+            playlistComboBox.Size = new Size(151, 23);
+            playlistComboBox.TabIndex = 11;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(466, 308);
+            Controls.Add(playlistComboBox);
+            Controls.Add(playlistCountLabel);
+            Controls.Add(selectedFileLabel);
             Controls.Add(trackBar1);
             Controls.Add(NextButton);
             Controls.Add(PreviousButton);
@@ -154,5 +184,8 @@
         private Button PreviousButton;
         private Button NextButton;
         private TrackBar trackBar1;
+        private Label selectedFileLabel;
+        private Label playlistCountLabel;
+        private ComboBox playlistComboBox;
     }
 }
