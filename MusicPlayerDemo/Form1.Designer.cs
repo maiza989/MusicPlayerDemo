@@ -37,12 +37,12 @@
             PauseButton = new Button();
             PreviousButton = new Button();
             NextButton = new Button();
-            trackBar1 = new TrackBar();
             selectedFileLabel = new Label();
             playlistCountLabel = new Label();
             playlistComboBox = new ComboBox();
+            trackBar = new TrackBar();
             menuStrip2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackBar).BeginInit();
             SuspendLayout();
             // 
             // menuStrip2
@@ -73,7 +73,7 @@
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             exitToolStripMenuItem.Size = new Size(103, 22);
             exitToolStripMenuItem.Text = "Exit";
-            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            exitToolStripMenuItem.Click += exitToolStripMenuItemClick;
             // 
             // openFileDialog1
             // 
@@ -87,7 +87,7 @@
             PlayButton.TabIndex = 2;
             PlayButton.Text = "Play";
             PlayButton.UseVisualStyleBackColor = true;
-            PlayButton.Click += PlayButton_Click;
+            PlayButton.Click += PlayButtonClick;
             // 
             // PauseButton
             // 
@@ -97,7 +97,7 @@
             PauseButton.TabIndex = 3;
             PauseButton.Text = "Pause";
             PauseButton.UseVisualStyleBackColor = true;
-            PauseButton.Click += PauseButton_Click;
+            PauseButton.Click += PauseButtonClick;
             // 
             // PreviousButton
             // 
@@ -107,7 +107,7 @@
             PreviousButton.TabIndex = 5;
             PreviousButton.Text = "Previous";
             PreviousButton.UseVisualStyleBackColor = true;
-            PreviousButton.Click += PreviousButton_Click;
+            PreviousButton.Click += PreviousButtonClick;
             // 
             // NextButton
             // 
@@ -117,14 +117,7 @@
             NextButton.TabIndex = 6;
             NextButton.Text = "Next";
             NextButton.UseVisualStyleBackColor = true;
-            NextButton.Click += NextButton_Click;
-            // 
-            // trackBar1
-            // 
-            trackBar1.Location = new Point(52, 143);
-            trackBar1.Name = "trackBar1";
-            trackBar1.Size = new Size(373, 45);
-            trackBar1.TabIndex = 7;
+            NextButton.Click += NextButtonClick;
             // 
             // selectedFileLabel
             // 
@@ -150,25 +143,34 @@
             playlistComboBox.Size = new Size(151, 23);
             playlistComboBox.TabIndex = 11;
             // 
+            // trackBar
+            // 
+            trackBar.Location = new Point(100, 143);
+            trackBar.Name = "trackBar";
+            trackBar.Size = new Size(284, 45);
+            trackBar.TabIndex = 12;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = SystemColors.Window;
             ClientSize = new Size(466, 308);
+            Controls.Add(trackBar);
             Controls.Add(playlistComboBox);
             Controls.Add(playlistCountLabel);
             Controls.Add(selectedFileLabel);
-            Controls.Add(trackBar1);
             Controls.Add(NextButton);
             Controls.Add(PreviousButton);
             Controls.Add(PauseButton);
             Controls.Add(PlayButton);
             Controls.Add(menuStrip2);
+            ForeColor = SystemColors.InfoText;
             Name = "Form1";
-            Text = "Form1";
+            Text = "Media Player";
             menuStrip2.ResumeLayout(false);
             menuStrip2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)trackBar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -183,9 +185,10 @@
         private Button PauseButton;
         private Button PreviousButton;
         private Button NextButton;
-        private TrackBar trackBar1;
+       // private TrackBar TrackBarUpdateTimerTick;
         private Label selectedFileLabel;
         private Label playlistCountLabel;
         private ComboBox playlistComboBox;
+        private TrackBar trackBar;
     }
 }

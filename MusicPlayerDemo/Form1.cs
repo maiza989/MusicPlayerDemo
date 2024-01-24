@@ -1,5 +1,7 @@
 using NAudio.Wave;
 using System.Media;
+using Timer = System.Windows.Forms.Timer;
+
 
 namespace MusicPlayerDemo
 {
@@ -10,41 +12,22 @@ namespace MusicPlayerDemo
         private List<string> playlist;
         private int currentTrackIndex = 0;
 
+        private Timer trackBarUpdateTimer;
+
+
 
         public Form1()
         {
             InitializeComponent();
             wavePlayer = new WaveOutEvent(); // Initialize WaveOutEvent
             playlist = new List<string>();
+
+            // Initialize the Timer for updating the TrackBar
+            trackBarUpdateTimer = new Timer();
+            trackBarUpdateTimer.Interval = 1000; // Set the interval in milliseconds (adjust as needed)
+            trackBarUpdateTimer.Tick += TrackBarUpdateTimerTick;
         }
-
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Audio Files|*.wav;*.mp3;*.ogg;*.flac;*.aac|All Files|*.*";
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                // Add the selected files to the playlist history
-                playlist.AddRange(openFileDialog.FileNames.Select(Path.GetFileName));
-
-                // Update the ComboBox with the playlist
-                UpdatePlaylistComboBox();
-
-                currentTrackIndex = playlist.Count - 1;
-
-                // Set the label text to the selected file name
-                if (playlist.Count > 0)
-                {
-                    selectedFileLabel.Text = System.IO.Path.GetFileName(playlist[currentTrackIndex]);
-                }
-                // Update the playlist count label
-                UpdatePlaylistCountLabel();
-                // Update the next/previous buttons
-                UpdateNextPreviousButtons();
-                PlayCurrentTrack();
-            }
-        }
+      
         private void PlayCurrentTrack()
         {
             if (playlist != null && playlist.Count > 0 && currentTrackIndex < playlist.Count)
@@ -55,13 +38,20 @@ namespace MusicPlayerDemo
                     wavePlayer.Stop();
                     wavePlayer.Dispose();
                     audioFileReader.Dispose();
+
+                    // Stop the timer when audio playback stops
+                    trackBarUpdateTimer.Stop();
                 }
 
                 // Initialize new resources
+                
                 audioFileReader = new AudioFileReader(playlist[currentTrackIndex]);
                 wavePlayer = new WaveOutEvent();
                 wavePlayer.Init(audioFileReader);
                 wavePlayer.Play();
+
+                // Start the timer when audio playback starts
+                trackBarUpdateTimer.Start();
             }
         }
         private void UpdatePlaylistCountLabel()
@@ -80,7 +70,9 @@ namespace MusicPlayerDemo
         {
             // Update the ComboBox with the playlist
             playlistComboBox.Items.Clear();
-            playlistComboBox.Items.AddRange(playlist.ToArray());
+            // Use LINQ to extract only the file names
+            var fileNames = playlist.Select(Path.GetFileNameWithoutExtension).ToArray();
+            playlistComboBox.Items.AddRange(fileNames);
             playlistComboBox.SelectedIndex = currentTrackIndex;
         }
         private void playlistComboBoxSelectedIndexChanged(object sender, EventArgs e)
@@ -92,8 +84,10 @@ namespace MusicPlayerDemo
                 currentTrackIndex = selectedIndex;
 
                 // Set the label text to the selected file name
-                selectedFileLabel.Text = System.IO.Path.GetFileName(playlist[currentTrackIndex]);
+                selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
 
+                // Reset the TrackBar position
+                trackBar.Value = 0;
                 // Update the next/previous buttons
                 UpdateNextPreviousButtons();
                 // Update audio label
@@ -102,43 +96,82 @@ namespace MusicPlayerDemo
                 PlayCurrentTrack();
             }
         }
+        private void TrackBarUpdateTimerTick(object sender, EventArgs e)
+        {
+            if (audioFileReader != null)
+            {
+                // Update the TrackBar position based on the audio playback position
+                trackBar.Value = (int)(audioFileReader.Position / (double)audioFileReader.Length * trackBar.Maximum);
+            }
+        }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+
+        //---------------------------------------------------------------------------------------------------------------
+        //                                      BUTTONS
+        //---------------------------------------------------------------------------------------------------------------
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Audio Files|*.wav;*.mp3;*.ogg;*.flac;*.aac|All Files|*.*";
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                // Add the selected files to the playlist history
+                playlist.AddRange(openFileDialog.FileNames);
+
+                // Update the ComboBox with the playlist
+                UpdatePlaylistComboBox();
+
+                currentTrackIndex = playlist.Count - 1;
+
+                // Set the label text to the selected file name
+                if (playlist.Count > 0)
+                {
+                    selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+                }
+                // Update the playlist count label
+                UpdatePlaylistCountLabel();
+                // Update the next/previous buttons
+                UpdateNextPreviousButtons();
+                PlayCurrentTrack();
+            }
+        }
+        private void exitToolStripMenuItemClick(object sender, EventArgs e)
         {
             Application.Exit();
         }
-        private void PlayButton_Click(object sender, EventArgs e)
+        private void PlayButtonClick(object sender, EventArgs e)
         {
             wavePlayer.Play();
-        }
-        private void PauseButton_Click(object sender, EventArgs e)
+        }//
+        private void PauseButtonClick(object sender, EventArgs e)
         {
             wavePlayer.Stop();
-        }
-        private void PreviousButton_Click(object sender, EventArgs e)
+        }// end of PasueButtonClick
+        private void PreviousButtonClick(object sender, EventArgs e)
         {
             currentTrackIndex = (currentTrackIndex - 1 + playlist.Count) % playlist.Count;
 
             // Set the label text to the selected file name
             if (playlist.Count > 0)
             {
-                selectedFileLabel.Text = System.IO.Path.GetFileName(playlist[currentTrackIndex]);
+                selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
                 // Update the playlist count label
                 UpdatePlaylistCountLabel();
                 // Update the next/previous buttons
                 UpdateNextPreviousButtons();
                 PlayCurrentTrack();
-            }
-            
-        }
-        private void NextButton_Click(object sender, EventArgs e)
+            }  
+        }// end of PreviousButtonClick
+        private void NextButtonClick(object sender, EventArgs e)
         {
             currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;
 
             // Set the label text to the selected file name
             if (playlist.Count > 0)
             {
-                selectedFileLabel.Text = System.IO.Path.GetFileName(playlist[currentTrackIndex]);
+                selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
                 // Update the playlist count label
                 UpdatePlaylistCountLabel();
                 // Update the next/previous buttons
@@ -146,7 +179,7 @@ namespace MusicPlayerDemo
                 PlayCurrentTrack();
             }
             
-        }
+        }// end of NextButtonClick
 
     }
-}
+}// end of class
