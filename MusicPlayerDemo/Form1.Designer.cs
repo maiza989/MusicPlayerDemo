@@ -43,6 +43,7 @@
             trackBar = new TrackBar();
             VolumeTrackBar = new TrackBar();
             label1 = new Label();
+            DurationLabel = new Label();
             menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).BeginInit();
@@ -125,7 +126,7 @@
             // selectedFileLabel
             // 
             selectedFileLabel.AutoSize = true;
-            selectedFileLabel.Location = new Point(175, 70);
+            selectedFileLabel.Location = new Point(176, 113);
             selectedFileLabel.Name = "selectedFileLabel";
             selectedFileLabel.Size = new Size(0, 15);
             selectedFileLabel.TabIndex = 8;
@@ -161,7 +162,7 @@
             VolumeTrackBar.Name = "VolumeTrackBar";
             VolumeTrackBar.Size = new Size(104, 45);
             VolumeTrackBar.TabIndex = 13;
-            VolumeTrackBar.Value = 20;
+            VolumeTrackBar.Value = 10;
             // 
             // label1
             // 
@@ -172,12 +173,21 @@
             label1.TabIndex = 14;
             label1.Text = "Sound Level";
             // 
+            // DurationLabel
+            // 
+            DurationLabel.AutoSize = true;
+            DurationLabel.Location = new Point(217, 173);
+            DurationLabel.Name = "DurationLabel";
+            DurationLabel.Size = new Size(0, 15);
+            DurationLabel.TabIndex = 15;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Window;
             ClientSize = new Size(466, 308);
+            Controls.Add(DurationLabel);
             Controls.Add(label1);
             Controls.Add(VolumeTrackBar);
             Controls.Add(trackBar);
@@ -217,5 +227,6 @@
         private TrackBar trackBar;
         private TrackBar VolumeTrackBar;
         private Label label1;
+        private Label DurationLabel;
     }
 }

@@ -15,6 +15,7 @@ namespace MusicPlayerDemo
         private WaveChannel32 volumeStream; // audio volume
         private Timer trackBarUpdateTimer; // audio time tracker
         private MMDevice defaultPlaybackDevice; // System volume  
+        
 
         public Form1()
         {
@@ -24,13 +25,20 @@ namespace MusicPlayerDemo
 
             // Initialize the Timer for updating the TrackBar
             trackBarUpdateTimer = new Timer();
-            trackBarUpdateTimer.Interval = 1000; // Set the interval in milliseconds (adjust as needed)
+            trackBarUpdateTimer.Interval = 1; // Set the interval in milliseconds (adjust as needed)
             trackBarUpdateTimer.Tick += TrackBarUpdateTimerTick;
+
+            
 
             // Subscribe to the Scroll event of the volume trackbar
             VolumeTrackBar.Scroll += volumeTrackBarScroll;
         }
       
+        
+//------------------------------------------------------------------------------------------------------
+//                                             METHODS
+//------------------------------------------------------------------------------------------------------
+         
         private void PlayCurrentTrack()
         {
             if (playlist != null && playlist.Count > 0 && currentTrackIndex < playlist.Count)
@@ -46,8 +54,7 @@ namespace MusicPlayerDemo
                     trackBarUpdateTimer.Stop();
                 }
 
-                // Initialize new resources
-                
+                // Initialize new resources  
                 audioFileReader = new AudioFileReader(playlist[currentTrackIndex]);
                 volumeStream = new WaveChannel32(audioFileReader); // Wrap AudioFileReader in WaveChannel32
                 wavePlayer = new WaveOut();
@@ -57,6 +64,13 @@ namespace MusicPlayerDemo
                 // Initialize the default playback device
                 MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
                 defaultPlaybackDevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+
+                // Set the maximum value of the TrackBar to the total duration of the audio file
+                trackBar.Maximum = (int)audioFileReader.TotalTime.TotalSeconds;
+
+                // Set the durationLabel text based on the total duration of the audio file
+                TimeSpan totalDuration = audioFileReader.TotalTime;
+                DurationLabel.Text = $"{totalDuration.Hours:D2}:{totalDuration.Minutes:D2}:{totalDuration.Seconds:D2}";
 
                 // Start the timer when audio playback starts
                 trackBarUpdateTimer.Start();
@@ -123,14 +137,33 @@ namespace MusicPlayerDemo
             if (audioFileReader != null)
             {
                 // Update the TrackBar position based on the audio playback position
-                trackBar.Value = (int)(audioFileReader.Position / (double)audioFileReader.Length * trackBar.Maximum);
+                int currentPosition = (int)(audioFileReader.CurrentTime.TotalSeconds);
+                trackBar.Value = currentPosition;
+
+                // Update the DurationLabel to count down
+                TimeSpan remainingTime = audioFileReader.TotalTime - audioFileReader.CurrentTime;
+                DurationLabel.Text = $"{remainingTime.Hours:D2}:{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
+
+                if(remainingTime.TotalSeconds <= 0)
+                {
+                    trackBarUpdateTimer.Stop();
+
+                    if(currentTrackIndex < playlist.Count - 1)
+                    {
+                        currentTrackIndex++;
+                        PlayCurrentTrack();
+                    }
+                    else
+                    {
+                        
+                    }      
+                }
             }
-        }
+        }// end of TrackBarUpdateTimerTick
 
-
-        //---------------------------------------------------------------------------------------------------------------
-        //                                      BUTTONS
-        //---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------
+//                                      BUTTONS
+//---------------------------------------------------------------------------------------------------------------
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -146,7 +179,6 @@ namespace MusicPlayerDemo
                 UpdatePlaylistComboBox();
 
                 currentTrackIndex = playlist.Count - 1;
-
                 // Set the label text to the selected file name
                 if (playlist.Count > 0)
                 {
@@ -156,6 +188,7 @@ namespace MusicPlayerDemo
                 UpdatePlaylistCountLabel();
                 // Update the next/previous buttons
                 UpdateNextPreviousButtons();
+                // play audio file
                 PlayCurrentTrack();
             }
         }
@@ -198,10 +231,9 @@ namespace MusicPlayerDemo
                 UpdatePlaylistCountLabel();
                 // Update the next/previous buttons
                 UpdateNextPreviousButtons();
+                // Play audio file
                 PlayCurrentTrack();
             }
-            
         }// end of NextButtonClick
-
-    }
-}// end of class
+    }// end of partial call Form1
+}// end of namespace
