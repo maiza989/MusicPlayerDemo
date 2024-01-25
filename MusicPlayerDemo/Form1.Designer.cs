@@ -41,8 +41,11 @@
             playlistCountLabel = new Label();
             playlistComboBox = new ComboBox();
             trackBar = new TrackBar();
+            VolumeTrackBar = new TrackBar();
+            label1 = new Label();
             menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).BeginInit();
             SuspendLayout();
             // 
             // menuStrip2
@@ -146,9 +149,28 @@
             // trackBar
             // 
             trackBar.Location = new Point(100, 143);
+            trackBar.Maximum = 100;
             trackBar.Name = "trackBar";
             trackBar.Size = new Size(284, 45);
             trackBar.TabIndex = 12;
+            // 
+            // VolumeTrackBar
+            // 
+            VolumeTrackBar.Location = new Point(350, 262);
+            VolumeTrackBar.Maximum = 100;
+            VolumeTrackBar.Name = "VolumeTrackBar";
+            VolumeTrackBar.Size = new Size(104, 45);
+            VolumeTrackBar.TabIndex = 13;
+            VolumeTrackBar.Value = 20;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(273, 274);
+            label1.Name = "label1";
+            label1.Size = new Size(71, 15);
+            label1.TabIndex = 14;
+            label1.Text = "Sound Level";
             // 
             // Form1
             // 
@@ -156,6 +178,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Window;
             ClientSize = new Size(466, 308);
+            Controls.Add(label1);
+            Controls.Add(VolumeTrackBar);
             Controls.Add(trackBar);
             Controls.Add(playlistComboBox);
             Controls.Add(playlistCountLabel);
@@ -171,6 +195,7 @@
             menuStrip2.ResumeLayout(false);
             menuStrip2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -190,5 +215,7 @@
         private Label playlistCountLabel;
         private ComboBox playlistComboBox;
         private TrackBar trackBar;
+        private TrackBar VolumeTrackBar;
+        private Label label1;
     }
 }

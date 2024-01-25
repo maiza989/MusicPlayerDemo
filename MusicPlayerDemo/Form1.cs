@@ -1,20 +1,20 @@
 using NAudio.Wave;
 using System.Media;
 using Timer = System.Windows.Forms.Timer;
+using NAudio.CoreAudioApi;
 
 
 namespace MusicPlayerDemo
 {
     public partial class Form1 : Form
     {
-        private IWavePlayer wavePlayer;
+        private IWavePlayer wavePlayer; // audio player
         private AudioFileReader audioFileReader;
         private List<string> playlist;
-        private int currentTrackIndex = 0;
-
-        private Timer trackBarUpdateTimer;
-
-
+        private int currentTrackIndex = 0; 
+        private WaveChannel32 volumeStream; // audio volume
+        private Timer trackBarUpdateTimer; // audio time tracker
+        private MMDevice defaultPlaybackDevice; // System volume  
 
         public Form1()
         {
@@ -26,6 +26,9 @@ namespace MusicPlayerDemo
             trackBarUpdateTimer = new Timer();
             trackBarUpdateTimer.Interval = 1000; // Set the interval in milliseconds (adjust as needed)
             trackBarUpdateTimer.Tick += TrackBarUpdateTimerTick;
+
+            // Subscribe to the Scroll event of the volume trackbar
+            VolumeTrackBar.Scroll += volumeTrackBarScroll;
         }
       
         private void PlayCurrentTrack()
@@ -46,9 +49,14 @@ namespace MusicPlayerDemo
                 // Initialize new resources
                 
                 audioFileReader = new AudioFileReader(playlist[currentTrackIndex]);
-                wavePlayer = new WaveOutEvent();
+                volumeStream = new WaveChannel32(audioFileReader); // Wrap AudioFileReader in WaveChannel32
+                wavePlayer = new WaveOut();
                 wavePlayer.Init(audioFileReader);
                 wavePlayer.Play();
+
+                // Initialize the default playback device
+                MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
+                defaultPlaybackDevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
 
                 // Start the timer when audio playback starts
                 trackBarUpdateTimer.Start();
@@ -74,6 +82,20 @@ namespace MusicPlayerDemo
             var fileNames = playlist.Select(Path.GetFileNameWithoutExtension).ToArray();
             playlistComboBox.Items.AddRange(fileNames);
             playlistComboBox.SelectedIndex = currentTrackIndex;
+        }
+        private void UpdateVolume(float volume)
+        {
+            if (defaultPlaybackDevice != null)
+            {
+                defaultPlaybackDevice.AudioEndpointVolume.MasterVolumeLevelScalar = volume;
+            }
+        }
+        private void volumeTrackBarScroll(object sender, EventArgs e)
+        {
+            // Calculate the volume from the trackbar value (0 to 100)
+            float volume = VolumeTrackBar.Value / 100f;
+            UpdateVolume(volume);
+
         }
         private void playlistComboBoxSelectedIndexChanged(object sender, EventArgs e)
         {
