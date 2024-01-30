@@ -25,20 +25,19 @@ namespace MusicPlayerDemo
 
             // Initialize the Timer for updating the TrackBar
             trackBarUpdateTimer = new Timer();
-            trackBarUpdateTimer.Interval = 1; // Set the interval in milliseconds (adjust as needed)
+            trackBarUpdateTimer.Interval = 100; // Set the interval in milliseconds (adjust as needed)
             trackBarUpdateTimer.Tick += TrackBarUpdateTimerTick;
-
-            
-
             // Subscribe to the Scroll event of the volume trackbar
-            VolumeTrackBar.Scroll += volumeTrackBarScroll;
-        }
-      
-        
-//------------------------------------------------------------------------------------------------------
-//                                             METHODS
-//------------------------------------------------------------------------------------------------------
-         
+            VolumeTrackBar.Scroll += VolumeTrackBarScroll;
+            // Subscribe to Combobox event.
+            playlistComboBox.SelectedIndexChanged += PlaylistComboBoxSelectedIndexChanged;
+
+        }// end of Form1
+
+        //------------------------------------------------------------------------------------------------------
+        //                                             METHODS
+        //------------------------------------------------------------------------------------------------------
+
         private void PlayCurrentTrack()
         {
             if (playlist != null && playlist.Count > 0 && currentTrackIndex < playlist.Count)
@@ -75,63 +74,66 @@ namespace MusicPlayerDemo
                 // Start the timer when audio playback starts
                 trackBarUpdateTimer.Start();
             }
-        }
+        }// end of PlayCurrentTrack
         private void UpdatePlaylistCountLabel()
         {
             // Update the label to display the number of audio files in the playlist
             playlistCountLabel.Text = "Playlist Count: " + playlist.Count.ToString();
-        }
+        }// end of UpdatePlaylistCountLabel
         private void UpdateNextPreviousButtons()
         {
             // Enable/disable next/previous buttons based on the current track index
             NextButton.Enabled = currentTrackIndex < playlist.Count - 1;
             PreviousButton.Enabled = currentTrackIndex > 0;
-        }
-
+        }// end of UpdateNextPreviousButtons
         private void UpdatePlaylistComboBox()
         {
             // Update the ComboBox with the playlist
             playlistComboBox.Items.Clear();
-            // Use LINQ to extract only the file names
+            // Extract only the file names
             var fileNames = playlist.Select(Path.GetFileNameWithoutExtension).ToArray();
             playlistComboBox.Items.AddRange(fileNames);
             playlistComboBox.SelectedIndex = currentTrackIndex;
-        }
+        }// end of UpdatePlaylistComboBox
         private void UpdateVolume(float volume)
         {
             if (defaultPlaybackDevice != null)
             {
                 defaultPlaybackDevice.AudioEndpointVolume.MasterVolumeLevelScalar = volume;
             }
-        }
-        private void volumeTrackBarScroll(object sender, EventArgs e)
+        }// end of UpdateVolume
+        private void VolumeTrackBarScroll(object sender, EventArgs e)
         {
             // Calculate the volume from the trackbar value (0 to 100)
             float volume = VolumeTrackBar.Value / 100f;
             UpdateVolume(volume);
 
-        }
-        private void playlistComboBoxSelectedIndexChanged(object sender, EventArgs e)
+        }// end of VolumeTrackBarScroll
+        private void PlaylistComboBoxSelectedIndexChanged(object sender, EventArgs e)
         {
             // Handle selection change in the ComboBox
             int selectedIndex = playlistComboBox.SelectedIndex;
             if (selectedIndex >= 0 && selectedIndex < playlist.Count)
             {
                 currentTrackIndex = selectedIndex;
-
                 // Set the label text to the selected file name
                 selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
-
                 // Reset the TrackBar position
                 trackBar.Value = 0;
                 // Update the next/previous buttons
                 UpdateNextPreviousButtons();
                 // Update audio label
                 UpdatePlaylistCountLabel();
-                // Play audio file
-                PlayCurrentTrack();
+                
             }
-        }
+            // Stop the current track if playing
+            if (wavePlayer != null && wavePlayer.PlaybackState == PlaybackState.Playing)
+            {
+                wavePlayer.Stop();
+            }
+            // Play audio file
+            PlayCurrentTrack();
+        }// end of PlaylistComboBoxSelectedIndexChanged
         private void TrackBarUpdateTimerTick(object sender, EventArgs e)
         {
             if (audioFileReader != null)
@@ -172,12 +174,21 @@ namespace MusicPlayerDemo
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                // Add the selected files to the playlist history
-                playlist.AddRange(openFileDialog.FileNames);
 
+                // Add the selected files to the playlist history
+                // playlist.AddRange(openFileDialog.FileNames);
+
+                foreach (var filePath in openFileDialog.FileNames)
+                {
+                    // Check if the file is not already in the playlist before adding
+                    if (!playlist.Contains(filePath))
+                    {
+                        // Add the selected file to the playlist
+                        playlist.Add(filePath);
+                    }
+                }
                 // Update the ComboBox with the playlist
                 UpdatePlaylistComboBox();
-
                 currentTrackIndex = playlist.Count - 1;
                 // Set the label text to the selected file name
                 if (playlist.Count > 0)
@@ -191,15 +202,15 @@ namespace MusicPlayerDemo
                 // play audio file
                 PlayCurrentTrack();
             }
-        }
+        }// end of openToolStripMenuItemClick
         private void exitToolStripMenuItemClick(object sender, EventArgs e)
         {
             Application.Exit();
-        }
+        }// end of exitToolStripMenuItemClick
         private void PlayButtonClick(object sender, EventArgs e)
         {
             wavePlayer.Play();
-        }//
+        }//end of PlayButtonClick
         private void PauseButtonClick(object sender, EventArgs e)
         {
             wavePlayer.Stop();
