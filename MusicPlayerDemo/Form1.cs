@@ -15,7 +15,7 @@ namespace MusicPlayerDemo
         private WaveChannel32 volumeStream; // audio volume
         private Timer trackBarUpdateTimer; // audio time tracker
         private MMDevice defaultPlaybackDevice; // System volume  
-        
+        private bool isLooping = false; // loop feature
 
         public Form1()
         {
@@ -27,10 +27,21 @@ namespace MusicPlayerDemo
             trackBarUpdateTimer = new Timer();
             trackBarUpdateTimer.Interval = 100; // Set the interval in milliseconds (adjust as needed)
             trackBarUpdateTimer.Tick += TrackBarUpdateTimerTick;
+
             // Subscribe to the Scroll event of the volume trackbar
             VolumeTrackBar.Scroll += VolumeTrackBarScroll;
+            // Fetch and set the default system audio volume
+            defaultPlaybackDevice = (new MMDeviceEnumerator()).GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            float defaultVolume = defaultPlaybackDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
+            // Set the initial value of the VolumeTrackBar based on the default system volume
+            int trackBarValue = (int)(defaultVolume * 100);
+            VolumeTrackBar.Value = trackBarValue;
+
             // Subscribe to Combobox event.
             playlistComboBox.SelectedIndexChanged += PlaylistComboBoxSelectedIndexChanged;
+            // Subscribe to Checked box changed event. 
+            LoopingCheckBox.CheckedChanged += LoopingCheckBoxCheckedChanged;
+
 
         }// end of Form1
 
@@ -58,6 +69,8 @@ namespace MusicPlayerDemo
                 volumeStream = new WaveChannel32(audioFileReader); // Wrap AudioFileReader in WaveChannel32
                 wavePlayer = new WaveOut();
                 wavePlayer.Init(audioFileReader);
+                // Subscribe to the playback stopped event
+                wavePlayer.PlaybackStopped += WavePlayerPlaybackStopped;
                 wavePlayer.Play();
 
                 // Initialize the default playback device
@@ -162,10 +175,45 @@ namespace MusicPlayerDemo
                 }
             }
         }// end of TrackBarUpdateTimerTick
+        private void WavePlayerPlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            if (isLooping)
+            {
+                if (e.Exception != null) // If the playback stopped due to an exception, handle it here
+                {
+                    Console.WriteLine("Playback stopped with exception: " + e.Exception.Message);
+                }
 
-//---------------------------------------------------------------------------------------------------------------
-//                                      BUTTONS
-//---------------------------------------------------------------------------------------------------------------
+                // If looping is enabled, restart the playback
+                if (currentTrackIndex < playlist.Count - 1)
+                {
+                    currentTrackIndex++;
+                    PlayCurrentTrack();
+                }
+                else
+                {
+                    // Restart from the beginning of the playlist
+                    currentTrackIndex = 0;
+                    PlayCurrentTrack();
+                }
+            }
+            else
+            {
+                // Update UI or perform any other necessary actions when playback stops
+                trackBarUpdateTimer.Stop();
+            }
+        }
+
+        private void LoopingCheckBoxCheckedChanged(object sender, EventArgs e)
+        {
+            isLooping = LoopingCheckBox.Checked;
+            
+        }
+
+
+        //---------------------------------------------------------------------------------------------------------------
+        //                                      BUTTONS
+        //---------------------------------------------------------------------------------------------------------------
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -213,12 +261,11 @@ namespace MusicPlayerDemo
         }//end of PlayButtonClick
         private void PauseButtonClick(object sender, EventArgs e)
         {
-            wavePlayer.Stop();
+            wavePlayer.Pause();
         }// end of PasueButtonClick
         private void PreviousButtonClick(object sender, EventArgs e)
         {
             currentTrackIndex = (currentTrackIndex - 1 + playlist.Count) % playlist.Count;
-
             // Set the label text to the selected file name
             if (playlist.Count > 0)
             {

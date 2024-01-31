@@ -44,6 +44,7 @@
             VolumeTrackBar = new TrackBar();
             label1 = new Label();
             DurationLabel = new Label();
+            LoopingCheckBox = new CheckBox();
             menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).BeginInit();
@@ -181,12 +182,23 @@
             DurationLabel.Size = new Size(0, 15);
             DurationLabel.TabIndex = 15;
             // 
+            // LoopingCheckBox
+            // 
+            LoopingCheckBox.AutoSize = true;
+            LoopingCheckBox.Location = new Point(261, 235);
+            LoopingCheckBox.Name = "LoopingCheckBox";
+            LoopingCheckBox.Size = new Size(53, 19);
+            LoopingCheckBox.TabIndex = 16;
+            LoopingCheckBox.Text = "Loop";
+            LoopingCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Window;
             ClientSize = new Size(466, 308);
+            Controls.Add(LoopingCheckBox);
             Controls.Add(DurationLabel);
             Controls.Add(label1);
             Controls.Add(VolumeTrackBar);
@@ -228,5 +240,6 @@
         private TrackBar VolumeTrackBar;
         private Label label1;
         private Label DurationLabel;
+        private CheckBox LoopingCheckBox;
     }
 }
