@@ -1,7 +1,20 @@
+/*
+ * TODO#
+ * Display Track Information:
+ * Show metadata information such as artist, album, and track name. You can fetch this information from the audio file tags.
+ * ---
+ * Seeking in Track:
+ * Allow users to seek within a track by clicking on a specific position on the track progress bar.
+ * ---
+ * 
+ */
+
+
 using NAudio.Wave;
 using System.Media;
 using Timer = System.Windows.Forms.Timer;
 using NAudio.CoreAudioApi;
+using NAudio.Gui;
 
 
 namespace MusicPlayerDemo
@@ -16,6 +29,8 @@ namespace MusicPlayerDemo
         private Timer trackBarUpdateTimer; // audio time tracker
         private MMDevice defaultPlaybackDevice; // System volume  
         private bool isLooping = false; // loop feature
+        private bool isShuffle = false; // shuffle feature
+        private Random random = new Random();
 
         public Form1()
         {
@@ -30,17 +45,13 @@ namespace MusicPlayerDemo
 
             // Subscribe to the Scroll event of the volume trackbar
             VolumeTrackBar.Scroll += VolumeTrackBarScroll;
-            // Fetch and set the default system audio volume
-            defaultPlaybackDevice = (new MMDeviceEnumerator()).GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-            float defaultVolume = defaultPlaybackDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
-            // Set the initial value of the VolumeTrackBar based on the default system volume
-            int trackBarValue = (int)(defaultVolume * 100);
-            VolumeTrackBar.Value = trackBarValue;
-
+            FetchSystemVolumeLevel();
             // Subscribe to Combobox event.
             playlistComboBox.SelectedIndexChanged += PlaylistComboBoxSelectedIndexChanged;
-            // Subscribe to Checked box changed event. 
+            // Subscribe to Checked box changed event for looping. 
             LoopingCheckBox.CheckedChanged += LoopingCheckBoxCheckedChanged;
+            // Sbuscribe to check box changed event for shuffle
+            ShuffleButton.CheckedChanged += ShuffleCheckBoxCheckedChanged;
 
 
         }// end of Form1
@@ -50,7 +61,7 @@ namespace MusicPlayerDemo
         //------------------------------------------------------------------------------------------------------
 
         private void PlayCurrentTrack()
-        {
+        {           
             if (playlist != null && playlist.Count > 0 && currentTrackIndex < playlist.Count)
             {
                 if (audioFileReader != null)
@@ -59,35 +70,50 @@ namespace MusicPlayerDemo
                     wavePlayer.Stop();
                     wavePlayer.Dispose();
                     audioFileReader.Dispose();
-
                     // Stop the timer when audio playback stops
                     trackBarUpdateTimer.Stop();
                 }
-
                 // Initialize new resources  
                 audioFileReader = new AudioFileReader(playlist[currentTrackIndex]);
                 volumeStream = new WaveChannel32(audioFileReader); // Wrap AudioFileReader in WaveChannel32
                 wavePlayer = new WaveOut();
                 wavePlayer.Init(audioFileReader);
                 // Subscribe to the playback stopped event
-                wavePlayer.PlaybackStopped += WavePlayerPlaybackStopped;
+                //wavePlayer.PlaybackStopped += WavePlayerPlaybackStopped;
+                if(isLooping)
+                {
+                    wavePlayer.PlaybackStopped += LoopCurrentTrack;
+                    selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+                }
+                else if (isShuffle && playlist.Count > 1)
+                {
+                    wavePlayer.PlaybackStopped += ShuffleNextTrack;
+                    selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+                }
                 wavePlayer.Play();
 
                 // Initialize the default playback device
                 MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
                 defaultPlaybackDevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-
                 // Set the maximum value of the TrackBar to the total duration of the audio file
                 trackBar.Maximum = (int)audioFileReader.TotalTime.TotalSeconds;
-
                 // Set the durationLabel text based on the total duration of the audio file
                 TimeSpan totalDuration = audioFileReader.TotalTime;
                 DurationLabel.Text = $"{totalDuration.Hours:D2}:{totalDuration.Minutes:D2}:{totalDuration.Seconds:D2}";
-
                 // Start the timer when audio playback starts
                 trackBarUpdateTimer.Start();
+                
             }
         }// end of PlayCurrentTrack
+        private void FetchSystemVolumeLevel()
+        {
+            // Fetch and set the default system audio volume
+            defaultPlaybackDevice = (new MMDeviceEnumerator()).GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            float defaultVolume = defaultPlaybackDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
+            // Set the initial value of the VolumeTrackBar based on the default system volume
+            int trackBarValue = (int)(defaultVolume * 100);
+            VolumeTrackBar.Value = trackBarValue;
+        }// end of FetchSystemVolumeLevel
         private void UpdatePlaylistCountLabel()
         {
             // Update the label to display the number of audio files in the playlist
@@ -99,14 +125,14 @@ namespace MusicPlayerDemo
             NextButton.Enabled = currentTrackIndex < playlist.Count - 1;
             PreviousButton.Enabled = currentTrackIndex > 0;
         }// end of UpdateNextPreviousButtons
-        private void UpdatePlaylistComboBox()
+        private void UpdatePlaylistComboBox(int currentIndex)
         {
             // Update the ComboBox with the playlist
             playlistComboBox.Items.Clear();
             // Extract only the file names
             var fileNames = playlist.Select(Path.GetFileNameWithoutExtension).ToArray();
             playlistComboBox.Items.AddRange(fileNames);
-            playlistComboBox.SelectedIndex = currentTrackIndex;
+            playlistComboBox.SelectedIndex = currentIndex;
         }// end of UpdatePlaylistComboBox
         private void UpdateVolume(float volume)
         {
@@ -135,7 +161,7 @@ namespace MusicPlayerDemo
                 trackBar.Value = 0;
                 // Update the next/previous buttons
                 UpdateNextPreviousButtons();
-                // Update audio label
+                // Update audio count label
                 UpdatePlaylistCountLabel();
                 
             }
@@ -154,28 +180,41 @@ namespace MusicPlayerDemo
                 // Update the TrackBar position based on the audio playback position
                 int currentPosition = (int)(audioFileReader.CurrentTime.TotalSeconds);
                 trackBar.Value = currentPosition;
-
                 // Update the DurationLabel to count down
                 TimeSpan remainingTime = audioFileReader.TotalTime - audioFileReader.CurrentTime;
                 DurationLabel.Text = $"{remainingTime.Hours:D2}:{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
 
                 if(remainingTime.TotalSeconds <= 0)
-                {
+                {     
                     trackBarUpdateTimer.Stop();
-
-                    if(currentTrackIndex < playlist.Count - 1)
-                    {
-                        currentTrackIndex++;
-                        PlayCurrentTrack();
-                    }
-                    else
-                    {
-                        
-                    }      
+                    wavePlayer.Stop();
+                    
                 }
             }
         }// end of TrackBarUpdateTimerTick
-        private void WavePlayerPlaybackStopped(object sender, StoppedEventArgs e)
+        private void ShuffleNextTrack(object sender, StoppedEventArgs e)
+        {
+            if (isShuffle)
+            {
+                // Choose a random track index different from the current one
+                int nextIndex;
+                do
+                {
+                    nextIndex = random.Next(0, playlist.Count);
+                    //UpdatePlaylistComboBox(currentTrackIndex);
+                } while (nextIndex == currentTrackIndex);
+
+                currentTrackIndex = nextIndex;
+            }
+            else
+            {
+                // Move to the next track in a sequential order
+                currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;
+            }
+
+            PlayCurrentTrack();
+        }// end of ShuffleNextTrack
+        private void LoopCurrentTrack(object sender, StoppedEventArgs e)
         {
             if (isLooping)
             {
@@ -183,33 +222,25 @@ namespace MusicPlayerDemo
                 {
                     Console.WriteLine("Playback stopped with exception: " + e.Exception.Message);
                 }
-
-                // If looping is enabled, restart the playback
-                if (currentTrackIndex < playlist.Count - 1)
-                {
-                    currentTrackIndex++;
-                    PlayCurrentTrack();
-                }
-                else
-                {
-                    // Restart from the beginning of the playlist
-                    currentTrackIndex = 0;
-                    PlayCurrentTrack();
-                }
+                PlayCurrentTrack();
             }
-            else
-            {
-                // Update UI or perform any other necessary actions when playback stops
-                trackBarUpdateTimer.Stop();
-            }
-        }
+        }// end of LoopCUrrentTrack
 
         private void LoopingCheckBoxCheckedChanged(object sender, EventArgs e)
         {
-            isLooping = LoopingCheckBox.Checked;
             
-        }
+            isLooping = LoopingCheckBox.Checked;
+            isShuffle = false;
+            //LoopCurrentTrack();
 
+        }// end of LoopingCheckBoxCheckedChanged
+        private void ShuffleCheckBoxCheckedChanged(object sender, EventArgs e)
+        {
+            isShuffle = ShuffleButton.Checked;
+            isLooping = false;
+           // ShuffleNextTrack();
+
+        }// end of ShuffleCheckBoxCheckedChanged
 
         //---------------------------------------------------------------------------------------------------------------
         //                                      BUTTONS
@@ -236,12 +267,13 @@ namespace MusicPlayerDemo
                     }
                 }
                 // Update the ComboBox with the playlist
-                UpdatePlaylistComboBox();
+                UpdatePlaylistComboBox(currentTrackIndex);
                 currentTrackIndex = playlist.Count - 1;
                 // Set the label text to the selected file name
                 if (playlist.Count > 0)
                 {
                     selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+                    
                 }
                 // Update the playlist count label
                 UpdatePlaylistCountLabel();
@@ -249,6 +281,7 @@ namespace MusicPlayerDemo
                 UpdateNextPreviousButtons();
                 // play audio file
                 PlayCurrentTrack();
+                
             }
         }// end of openToolStripMenuItemClick
         private void exitToolStripMenuItemClick(object sender, EventArgs e)
@@ -258,6 +291,10 @@ namespace MusicPlayerDemo
         private void PlayButtonClick(object sender, EventArgs e)
         {
             wavePlayer.Play();
+            if(wavePlayer.PlaybackState  == PlaybackState.Stopped)
+            {
+                PlayCurrentTrack();
+            }
         }//end of PlayButtonClick
         private void PauseButtonClick(object sender, EventArgs e)
         {
