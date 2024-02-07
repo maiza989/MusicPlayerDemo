@@ -1,8 +1,12 @@
 /*
- * TODO#
+ * ## TODO
  * Display Track Information:
  * Show metadata information such as artist, album, and track name. You can fetch this information from the audio file tags.
  * ---
+ *
+ * Continue to work on Extracting artist metadata
+ *
+ * ## WAIT LIST
  * Seeking in Track:
  * Allow users to seek within a track by clicking on a specific position on the track progress bar.
  * ---
@@ -15,6 +19,7 @@ using System.Media;
 using Timer = System.Windows.Forms.Timer;
 using NAudio.CoreAudioApi;
 using NAudio.Gui;
+using TagLib;
 
 
 namespace MusicPlayerDemo
@@ -83,12 +88,12 @@ namespace MusicPlayerDemo
                 if(isLooping)
                 {
                     wavePlayer.PlaybackStopped += LoopCurrentTrack;
-                    selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+                    FetchTrackInfo(currentTrackIndex.ToString());
                 }
                 else if (isShuffle && playlist.Count > 1)
                 {
                     wavePlayer.PlaybackStopped += ShuffleNextTrack;
-                    selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+                    FetchTrackInfo(currentTrackIndex.ToString());
                 }
                 wavePlayer.Play();
 
@@ -102,9 +107,26 @@ namespace MusicPlayerDemo
                 DurationLabel.Text = $"{totalDuration.Hours:D2}:{totalDuration.Minutes:D2}:{totalDuration.Seconds:D2}";
                 // Start the timer when audio playback starts
                 trackBarUpdateTimer.Start();
-                
+   
             }
         }// end of PlayCurrentTrack
+        private void FetchTrackInfo(string filePath)
+        {
+            selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+            try
+            {
+                // load audio file
+                TagLib.File file = TagLib.File.Create(filePath);
+                //extract the artist name from metadata
+                string artist = file.Tag.FirstPerformer;
+                ArtistNameLabel.Text = artist;
+            }
+            catch(Exception ex) 
+            {
+                Console.WriteLine("Error extracting metadata for artist name" + ex.Message);
+                ArtistNameLabel.Text = "Unknown";
+            }
+        }
         private void FetchSystemVolumeLevel()
         {
             // Fetch and set the default system audio volume
@@ -156,7 +178,7 @@ namespace MusicPlayerDemo
             {
                 currentTrackIndex = selectedIndex;
                 // Set the label text to the selected file name
-                selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+                FetchTrackInfo(currentTrackIndex.ToString());
                 // Reset the TrackBar position
                 trackBar.Value = 0;
                 // Update the next/previous buttons
@@ -272,7 +294,7 @@ namespace MusicPlayerDemo
                 // Set the label text to the selected file name
                 if (playlist.Count > 0)
                 {
-                    selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+                    FetchTrackInfo(currentTrackIndex.ToString());
                     
                 }
                 // Update the playlist count label
@@ -306,7 +328,7 @@ namespace MusicPlayerDemo
             // Set the label text to the selected file name
             if (playlist.Count > 0)
             {
-                selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+                FetchTrackInfo(currentTrackIndex.ToString());
                 // Update the playlist count label
                 UpdatePlaylistCountLabel();
                 // Update the next/previous buttons
@@ -321,7 +343,7 @@ namespace MusicPlayerDemo
             // Set the label text to the selected file name
             if (playlist.Count > 0)
             {
-                selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+                FetchTrackInfo(currentTrackIndex.ToString());
                 // Update the playlist count label
                 UpdatePlaylistCountLabel();
                 // Update the next/previous buttons

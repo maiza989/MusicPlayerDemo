@@ -45,6 +45,9 @@
             label1 = new Label();
             DurationLabel = new Label();
             LoopingCheckBox = new CheckBox();
+            ShuffleButton = new CheckBox();
+            PlaylistLabel = new Label();
+            ArtistNameLabel = new Label();
             menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).BeginInit();
@@ -127,7 +130,7 @@
             // selectedFileLabel
             // 
             selectedFileLabel.AutoSize = true;
-            selectedFileLabel.Location = new Point(176, 113);
+            selectedFileLabel.Location = new Point(174, 102);
             selectedFileLabel.Name = "selectedFileLabel";
             selectedFileLabel.Size = new Size(0, 15);
             selectedFileLabel.TabIndex = 8;
@@ -143,7 +146,7 @@
             // playlistComboBox
             // 
             playlistComboBox.FormattingEnabled = true;
-            playlistComboBox.Location = new Point(0, 42);
+            playlistComboBox.Location = new Point(52, 47);
             playlistComboBox.Name = "playlistComboBox";
             playlistComboBox.Size = new Size(151, 23);
             playlistComboBox.TabIndex = 11;
@@ -192,12 +195,42 @@
             LoopingCheckBox.Text = "Loop";
             LoopingCheckBox.UseVisualStyleBackColor = true;
             // 
+            // ShuffleButton
+            // 
+            ShuffleButton.AutoSize = true;
+            ShuffleButton.Location = new Point(134, 235);
+            ShuffleButton.Name = "ShuffleButton";
+            ShuffleButton.Size = new Size(63, 19);
+            ShuffleButton.TabIndex = 17;
+            ShuffleButton.Text = "Shuffle";
+            ShuffleButton.UseVisualStyleBackColor = true;
+            // 
+            // PlaylistLabel
+            // 
+            PlaylistLabel.AutoSize = true;
+            PlaylistLabel.Location = new Point(0, 50);
+            PlaylistLabel.Name = "PlaylistLabel";
+            PlaylistLabel.Size = new Size(47, 15);
+            PlaylistLabel.TabIndex = 18;
+            PlaylistLabel.Text = "Playlist:";
+            // 
+            // ArtistNameLabel
+            // 
+            ArtistNameLabel.AutoSize = true;
+            ArtistNameLabel.Location = new Point(174, 125);
+            ArtistNameLabel.Name = "ArtistNameLabel";
+            ArtistNameLabel.Size = new Size(0, 15);
+            ArtistNameLabel.TabIndex = 19;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Window;
             ClientSize = new Size(466, 308);
+            Controls.Add(ArtistNameLabel);
+            Controls.Add(PlaylistLabel);
+            Controls.Add(ShuffleButton);
             Controls.Add(LoopingCheckBox);
             Controls.Add(DurationLabel);
             Controls.Add(label1);
@@ -241,5 +274,8 @@
         private Label label1;
         private Label DurationLabel;
         private CheckBox LoopingCheckBox;
+        private CheckBox ShuffleButton;
+        private Label PlaylistLabel;
+        private Label ArtistNameLabel;
     }
 }
