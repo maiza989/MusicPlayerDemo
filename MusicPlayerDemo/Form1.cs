@@ -8,8 +8,6 @@
  * ---
  * 
  */
-
-
 using NAudio.Wave;
 using System.Media;
 using Timer = System.Windows.Forms.Timer;
