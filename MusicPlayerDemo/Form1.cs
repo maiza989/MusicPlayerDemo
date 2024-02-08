@@ -1,10 +1,5 @@
 /*
  * ## TODO
- * Display Track Information:
- * Show metadata information such as artist, album, and track name. You can fetch this information from the audio file tags.
- * ---
- *
- * Continue to work on Extracting artist metadata
  *
  * ## WAIT LIST
  * Seeking in Track:
@@ -20,6 +15,7 @@ using Timer = System.Windows.Forms.Timer;
 using NAudio.CoreAudioApi;
 using NAudio.Gui;
 using TagLib;
+
 
 
 namespace MusicPlayerDemo
@@ -58,7 +54,6 @@ namespace MusicPlayerDemo
             // Sbuscribe to check box changed event for shuffle
             ShuffleButton.CheckedChanged += ShuffleCheckBoxCheckedChanged;
 
-
         }// end of Form1
 
         //------------------------------------------------------------------------------------------------------
@@ -83,17 +78,19 @@ namespace MusicPlayerDemo
                 volumeStream = new WaveChannel32(audioFileReader); // Wrap AudioFileReader in WaveChannel32
                 wavePlayer = new WaveOut();
                 wavePlayer.Init(audioFileReader);
-                // Subscribe to the playback stopped event
-                //wavePlayer.PlaybackStopped += WavePlayerPlaybackStopped;
+                /*
+                 * An iff statement to check if the loop or shuffle button is checked
+                 * If so subscribe to the method of the buttoned check and fetch the track infromation.
+                 */
                 if(isLooping)
                 {
                     wavePlayer.PlaybackStopped += LoopCurrentTrack;
-                    FetchTrackInfo(currentTrackIndex.ToString());
+                    FetchTrackInfo(playlist[currentTrackIndex]);
                 }
                 else if (isShuffle && playlist.Count > 1)
                 {
                     wavePlayer.PlaybackStopped += ShuffleNextTrack;
-                    FetchTrackInfo(currentTrackIndex.ToString());
+                    FetchTrackInfo(playlist[currentTrackIndex]);
                 }
                 wavePlayer.Play();
 
@@ -111,20 +108,22 @@ namespace MusicPlayerDemo
             }
         }// end of PlayCurrentTrack
         private void FetchTrackInfo(string filePath)
-        {
-            selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
+        {     
             try
             {
                 // load audio file
-                TagLib.File file = TagLib.File.Create(filePath);
+                TagLib.File file = TagLib.File.Create(filePath);   
                 //extract the artist name from metadata
                 string artist = file.Tag.FirstPerformer;
-                ArtistNameLabel.Text = artist;
+                string title = file.Tag.Title;
+                ArtistNameLabel.Text = string.IsNullOrEmpty(artist) ? "Unknown" : artist;
+                selectedFileLabel.Text = string.IsNullOrEmpty(title) ? System.IO.Path.GetFileNameWithoutExtension(filePath) : title;    
             }
             catch(Exception ex) 
             {
                 Console.WriteLine("Error extracting metadata for artist name" + ex.Message);
                 ArtistNameLabel.Text = "Unknown";
+                selectedFileLabel.Text = System.IO.Path.GetFileNameWithoutExtension(playlist[currentTrackIndex]);
             }
         }
         private void FetchSystemVolumeLevel()
@@ -140,12 +139,14 @@ namespace MusicPlayerDemo
         {
             // Update the label to display the number of audio files in the playlist
             playlistCountLabel.Text = "Playlist Count: " + playlist.Count.ToString();
+
         }// end of UpdatePlaylistCountLabel
         private void UpdateNextPreviousButtons()
         {
             // Enable/disable next/previous buttons based on the current track index
             NextButton.Enabled = currentTrackIndex < playlist.Count - 1;
             PreviousButton.Enabled = currentTrackIndex > 0;
+
         }// end of UpdateNextPreviousButtons
         private void UpdatePlaylistComboBox(int currentIndex)
         {
@@ -155,6 +156,7 @@ namespace MusicPlayerDemo
             var fileNames = playlist.Select(Path.GetFileNameWithoutExtension).ToArray();
             playlistComboBox.Items.AddRange(fileNames);
             playlistComboBox.SelectedIndex = currentIndex;
+
         }// end of UpdatePlaylistComboBox
         private void UpdateVolume(float volume)
         {
@@ -162,6 +164,7 @@ namespace MusicPlayerDemo
             {
                 defaultPlaybackDevice.AudioEndpointVolume.MasterVolumeLevelScalar = volume;
             }
+
         }// end of UpdateVolume
         private void VolumeTrackBarScroll(object sender, EventArgs e)
         {
@@ -178,7 +181,7 @@ namespace MusicPlayerDemo
             {
                 currentTrackIndex = selectedIndex;
                 // Set the label text to the selected file name
-                FetchTrackInfo(currentTrackIndex.ToString());
+                FetchTrackInfo(playlist[currentTrackIndex]);
                 // Reset the TrackBar position
                 trackBar.Value = 0;
                 // Update the next/previous buttons
@@ -194,6 +197,7 @@ namespace MusicPlayerDemo
             }
             // Play audio file
             PlayCurrentTrack();
+
         }// end of PlaylistComboBoxSelectedIndexChanged
         private void TrackBarUpdateTimerTick(object sender, EventArgs e)
         {
@@ -213,6 +217,7 @@ namespace MusicPlayerDemo
                     
                 }
             }
+
         }// end of TrackBarUpdateTimerTick
         private void ShuffleNextTrack(object sender, StoppedEventArgs e)
         {
@@ -233,8 +238,8 @@ namespace MusicPlayerDemo
                 // Move to the next track in a sequential order
                 currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;
             }
-
             PlayCurrentTrack();
+
         }// end of ShuffleNextTrack
         private void LoopCurrentTrack(object sender, StoppedEventArgs e)
         {
@@ -246,8 +251,8 @@ namespace MusicPlayerDemo
                 }
                 PlayCurrentTrack();
             }
-        }// end of LoopCUrrentTrack
 
+        }// end of LoopCUrrentTrack
         private void LoopingCheckBoxCheckedChanged(object sender, EventArgs e)
         {
             
@@ -294,7 +299,7 @@ namespace MusicPlayerDemo
                 // Set the label text to the selected file name
                 if (playlist.Count > 0)
                 {
-                    FetchTrackInfo(currentTrackIndex.ToString());
+                    FetchTrackInfo(playlist[currentTrackIndex]);
                     
                 }
                 // Update the playlist count label
@@ -302,9 +307,9 @@ namespace MusicPlayerDemo
                 // Update the next/previous buttons
                 UpdateNextPreviousButtons();
                 // play audio file
-                PlayCurrentTrack();
-                
+                PlayCurrentTrack();  
             }
+
         }// end of openToolStripMenuItemClick
         private void exitToolStripMenuItemClick(object sender, EventArgs e)
         {
@@ -328,7 +333,7 @@ namespace MusicPlayerDemo
             // Set the label text to the selected file name
             if (playlist.Count > 0)
             {
-                FetchTrackInfo(currentTrackIndex.ToString());
+                FetchTrackInfo(playlist[currentTrackIndex]);
                 // Update the playlist count label
                 UpdatePlaylistCountLabel();
                 // Update the next/previous buttons
@@ -343,7 +348,7 @@ namespace MusicPlayerDemo
             // Set the label text to the selected file name
             if (playlist.Count > 0)
             {
-                FetchTrackInfo(currentTrackIndex.ToString());
+                FetchTrackInfo(playlist[currentTrackIndex]);
                 // Update the playlist count label
                 UpdatePlaylistCountLabel();
                 // Update the next/previous buttons
