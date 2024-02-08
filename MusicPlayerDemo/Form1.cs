@@ -1,9 +1,10 @@
 /*
  * ## TODO
+ * Volume Fading:
+ * Smoothly fade the volume in and out when starting or stopping a track to prevent abrupt changes in audio levels.
  *
  * ## WAIT LIST
- * Seeking in Track:
- * Allow users to seek within a track by clicking on a specific position on the track progress bar.
+ * 
  * ---
  * 
  */
@@ -22,17 +23,22 @@ namespace MusicPlayerDemo
 {
     public partial class Form1 : Form
     {
+
+        private Random random = new Random();
+        private List<string> playlist;
+        private int currentTrackIndex = 0;
+
         private IWavePlayer wavePlayer; // audio player
         private AudioFileReader audioFileReader;
-        private List<string> playlist;
-        private int currentTrackIndex = 0; 
         private WaveChannel32 volumeStream; // audio volume
         private Timer trackBarUpdateTimer; // audio time tracker
         private MMDevice defaultPlaybackDevice; // System volume  
+
         private bool isLooping = false; // loop feature
         private bool isShuffle = false; // shuffle feature
-        private Random random = new Random();
+        private bool isSeeking = false; // Seeking feature
 
+        
         public Form1()
         {
             InitializeComponent();
@@ -45,10 +51,13 @@ namespace MusicPlayerDemo
             trackBarUpdateTimer.Tick += TrackBarUpdateTimerTick;
 
             FetchSystemVolumeLevel();
+            
             VolumeTrackBar.Scroll += VolumeTrackBarScroll;// Subscribe to the Scroll event of the volume trackbar
             playlistComboBox.SelectedIndexChanged += PlaylistComboBoxSelectedIndexChanged;// Subscribe to Combobox event.
             LoopingCheckBox.CheckedChanged += LoopingCheckBoxCheckedChanged;// Subscribe to Checked box changed event for looping. 
             ShuffleButton.CheckedChanged += ShuffleCheckBoxCheckedChanged;// Sbuscribe to check box changed event for shuffle
+            trackBar.MouseUp += SeekingTrackBarMouseUp; // subscribe to MouseUp event for audio trackBar seeking feature.
+            trackBar.Scroll += SeekingTrackBarScroll; // subscribe to Scroll event for audio trackBar seeking feature.
 
         }// end of Form1
 
@@ -193,17 +202,13 @@ namespace MusicPlayerDemo
 
             if (selectedIndex >= 0 && selectedIndex < playlist.Count)
             {
-
                 currentTrackIndex = selectedIndex;
                 FetchTrackInfo(playlist[currentTrackIndex]);
                 trackBar.Value = 0;
                 UpdateNextPreviousButtons();
-                UpdatePlaylistCountLabel();
-                
+                UpdatePlaylistCountLabel();            
             }
-
-            // Stop the current track if playing
-            if (wavePlayer != null && wavePlayer.PlaybackState == PlaybackState.Playing)
+            if (wavePlayer != null && wavePlayer.PlaybackState == PlaybackState.Playing) // Stop the current track if playing
             {
                 wavePlayer.Stop();
             }
@@ -214,9 +219,8 @@ namespace MusicPlayerDemo
         private void TrackBarUpdateTimerTick(object sender, EventArgs e)
         {
 
-            if (audioFileReader != null)
+            if (audioFileReader != null && wavePlayer.PlaybackState == PlaybackState.Playing)
             {
-
                 // Update the TrackBar position based on the audio playback position
                 int currentPosition = (int)(audioFileReader.CurrentTime.TotalSeconds);
                 trackBar.Value = currentPosition;
@@ -230,11 +234,46 @@ namespace MusicPlayerDemo
                     trackBarUpdateTimer.Stop();
                     wavePlayer.Stop();   
                 }
-
             }
 
         }// end of TrackBarUpdateTimerTick
 
+        private void SeekingTrackBarScroll(object sender, EventArgs e)
+        {
+            // Calculate the position to seek to based on the TrackBar value
+            if (audioFileReader != null)
+            {
+                // Check if the audio file reader is playing or paused before seeking
+                if (wavePlayer.PlaybackState == PlaybackState.Playing || wavePlayer.PlaybackState == PlaybackState.Paused)
+                {
+                    // Pause playback while seeking to avoid audio glitches
+                    if (wavePlayer.PlaybackState == PlaybackState.Playing)
+                    {
+                        wavePlayer.Pause();
+                    }
+
+                    // Seek to the desired position
+                    TimeSpan newPosition = TimeSpan.FromSeconds(trackBar.Value);
+                    audioFileReader.CurrentTime = newPosition;
+                    
+                    isSeeking = true; // set seeking flag to true
+                }
+            }
+        }// end of SeekingTrackBarScroll
+
+        private void SeekingTrackBarMouseUp(object sender, MouseEventArgs e)
+        {
+
+            // Resume playback if it was paused due to seeking
+            if (isSeeking && wavePlayer.PlaybackState == PlaybackState.Paused)
+            {
+                wavePlayer.Play();
+            }
+
+            // Reset the seeking flag
+            isSeeking = false;
+
+        }
         private void ShuffleNextTrack(object sender, StoppedEventArgs e)
         {
 
