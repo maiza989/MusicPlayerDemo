@@ -1,5 +1,6 @@
 /*
  * ## TODO
+ * Theme Customization: Allow users to choose different themes or customize the appearance of the application
  * 
  * ---
  * ## WAIT LIST
@@ -192,16 +193,12 @@ namespace MusicPlayerDemo
 
         }// end of UpdateNextPreviousButtons
 
-        private void UpdatePlaylistComboBox(int currentIndex)
+        private void UpdatePlaylistComboBox(int currentIndex) 
         {
 
-            // Update the ComboBox with the playlist
             playlistComboBox.Items.Clear();
-
-            // Extract only the file names
-            var fileNames = playlist.Select(Path.GetFileNameWithoutExtension).ToArray();
+            var fileNames = playlist.Select(Path.GetFileNameWithoutExtension).ToArray();            // Extract only the file names
             playlistComboBox.Items.AddRange(fileNames);
-
             playlistComboBox.SelectedIndex = currentIndex;
 
         }// end of UpdatePlaylistComboBox
@@ -218,8 +215,8 @@ namespace MusicPlayerDemo
         private void VolumeTrackBarScroll(object sender, EventArgs e)
         {
 
-            // Calculate the volume from the trackbar value (0 to 100)
-            float volume = VolumeTrackBar.Value / 100f;
+            
+            float volume = VolumeTrackBar.Value / 100f;                                             // Calculate the volume from the trackbar value (0 to 100)
             UpdateVolume(volume);
 
         }// end of VolumeTrackBarScroll
