@@ -48,11 +48,9 @@
             ShuffleButton = new CheckBox();
             PlaylistLabel = new Label();
             ArtistNameLabel = new Label();
-            WaveVisualizerPictureBox = new PictureBox();
             menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)WaveVisualizerPictureBox).BeginInit();
             SuspendLayout();
             // 
             // menuStrip2
@@ -224,21 +222,12 @@
             ArtistNameLabel.Size = new Size(0, 15);
             ArtistNameLabel.TabIndex = 19;
             // 
-            // WaveVisualizerPictureBox
-            // 
-            WaveVisualizerPictureBox.Location = new Point(0, 260);
-            WaveVisualizerPictureBox.Name = "WaveVisualizerPictureBox";
-            WaveVisualizerPictureBox.Size = new Size(181, 50);
-            WaveVisualizerPictureBox.TabIndex = 20;
-            WaveVisualizerPictureBox.TabStop = false;
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Window;
             ClientSize = new Size(466, 308);
-            Controls.Add(WaveVisualizerPictureBox);
             Controls.Add(ArtistNameLabel);
             Controls.Add(PlaylistLabel);
             Controls.Add(ShuffleButton);
@@ -262,7 +251,6 @@
             menuStrip2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).EndInit();
-            ((System.ComponentModel.ISupportInitialize)WaveVisualizerPictureBox).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -289,6 +277,5 @@
         private CheckBox ShuffleButton;
         private Label PlaylistLabel;
         private Label ArtistNameLabel;
-        private PictureBox WaveVisualizerPictureBox;
     }
 }

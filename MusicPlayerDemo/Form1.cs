@@ -1,12 +1,13 @@
 /*
  * ## TODO
- * Audio Visualization:
- * Include a visualizer to provide a dynamic representation of the audio being played.
+ * 
  * ---
  * ## WAIT LIST
  * Volume Fading:
  * Smoothly fade the volume in and out when starting or stopping a track to prevent abrupt changes in audio levels. 
  * ---
+ * Audio Visualization:
+ * Include a visualizer to provide a dynamic representation of the audio being played.
  * 
  */
 using NAudio.Wave;
@@ -19,51 +20,52 @@ using System.Runtime.CompilerServices;
 
 
 
+
 namespace MusicPlayerDemo
 {
-    public partial class Form1 : Form
+    public partial class Form1 : Form 
     {
 
         private Random random = new Random();
         private List<string> playlist;
         private int currentTrackIndex = 0;
-        private const int fadingDurationMilliseconds = 1000; // Adjust fading duration as needed
-        private const int fadingIntervalMilliseconds = 100;   // Adjust fading interval as needed
-        private const int fadingThresholdMilliseconds = 1000; // Threshold to start fading (1 second before the end)
+        private const int fadingDurationMilliseconds = 1000;        // Adjust fading duration as needed
+        private const int fadingIntervalMilliseconds = 100;         // Adjust fading interval as needed
+        private const int fadingThresholdMilliseconds = 1000;       // Threshold to start fading (1 second before the end)
 
 
-        private IWavePlayer wavePlayer; // audio player
+        private IWavePlayer wavePlayer;                             // audio player
         private AudioFileReader audioFileReader;
-        private WaveChannel32 volumeStream; // audio volume
-        private Timer trackBarUpdateTimer; // audio time tracker
-        private MMDevice defaultPlaybackDevice; // System volume  
+        private WaveChannel32 volumeStream;                         // audio volume
+        private Timer trackBarUpdateTimer;                          // audio time tracker
+        private MMDevice defaultPlaybackDevice;                     // System volume  
 
-        private bool isLooping = false; // loop feature
-        private bool isShuffle = false; // shuffle feature
-        private bool isSeeking = false; // Seeking feature
+        private bool isLooping = false;                             // loop feature
+        private bool isShuffle = false;                             // shuffle feature
+        private bool isSeeking = false;                             // Seeking feature
 
         
         public Form1()
         {
             InitializeComponent();
             FetchSystemVolumeLevel();
-            wavePlayer = new WaveOutEvent(); // Initialize WaveOutEvent
+            wavePlayer = new WaveOutEvent();                           // Initialize WaveOutEvent
             playlist = new List<string>();
 
-            this.FormBorderStyle = FormBorderStyle.Fixed3D; // Set the form's border style to fixed order
-            this.MinimumSize = new Size(450, 350); // Adjust the dimensions as needed (
+            this.FormBorderStyle = FormBorderStyle.Fixed3D;            // Set the form's border style to fixed order
+            this.MinimumSize = new Size(450, 350);                     // Adjust the dimensions as needed (
 
             // Initialize the Timer for updating the TrackBar
             trackBarUpdateTimer = new Timer();
-            trackBarUpdateTimer.Interval = 100; // Set the interval in milliseconds (adjust as needed)
+            trackBarUpdateTimer.Interval = 100;                        // Set the interval in milliseconds (adjust as needed)
             trackBarUpdateTimer.Tick += TrackBarUpdateTimerTick;
 
-            VolumeTrackBar.Scroll += VolumeTrackBarScroll;// Subscribe to the Scroll event of the volume trackbar
-            playlistComboBox.SelectedIndexChanged += PlaylistComboBoxSelectedIndexChanged;// Subscribe to Combobox event.
-            LoopingCheckBox.CheckedChanged += LoopingCheckBoxCheckedChanged;// Subscribe to Checked box changed event for looping. 
-            ShuffleButton.CheckedChanged += ShuffleCheckBoxCheckedChanged;// Sbuscribe to check box changed event for shuffle
-            trackBar.MouseUp += SeekingTrackBarMouseUp; // subscribe to MouseUp event for audio trackBar seeking feature.
-            trackBar.Scroll += SeekingTrackBarScroll; // subscribe to Scroll event for audio trackBar seeking feature.
+            VolumeTrackBar.Scroll += VolumeTrackBarScroll;                                         // Subscribe to the Scroll event of the volume trackbar
+            playlistComboBox.SelectedIndexChanged += PlaylistComboBoxSelectedIndexChanged;         // Subscribe to Combobox event.
+            LoopingCheckBox.CheckedChanged += LoopingCheckBoxCheckedChanged;                       // Subscribe to Checked box changed event for looping. 
+            ShuffleButton.CheckedChanged += ShuffleCheckBoxCheckedChanged;                         // Sbuscribe to check box changed event for shuffle
+            trackBar.MouseUp += SeekingTrackBarMouseUp;                                            // subscribe to MouseUp event for audio trackBar seeking feature.
+            trackBar.Scroll += SeekingTrackBarScroll;                                              // subscribe to Scroll event for audio trackBar seeking feature.
 
             // Set anchor properties for UI controls
             trackBar.Anchor = AnchorStyles.Left | AnchorStyles.Top;
@@ -103,7 +105,7 @@ namespace MusicPlayerDemo
                 }
                 // Initialize new resources  
                 audioFileReader = new AudioFileReader(playlist[currentTrackIndex]);
-                volumeStream = new WaveChannel32(audioFileReader); // Wrap AudioFileReader in WaveChannel32
+                volumeStream = new WaveChannel32(audioFileReader);                              // Wrap AudioFileReader in WaveChannel32
                 wavePlayer = new WaveOut();
                 wavePlayer.Init(audioFileReader);
 
@@ -126,12 +128,12 @@ namespace MusicPlayerDemo
                 // Initialize the default playback device
                 MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
                 defaultPlaybackDevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-                trackBar.Maximum = (int)audioFileReader.TotalTime.TotalSeconds; // Set the maximum value of the TrackBar to the total duration of the audio file
-                TimeSpan totalDuration = audioFileReader.TotalTime;  // Set the durationLabel text based on the total duration of the audio file
+                trackBar.Maximum = (int)audioFileReader.TotalTime.TotalSeconds;                                                  // Set the maximum value of the TrackBar to the total duration of the audio file
+                TimeSpan totalDuration = audioFileReader.TotalTime;                                                              // Set the durationLabel text based on the total duration of the audio file
                 DurationLabel.Text = $"{totalDuration.Hours:D2}:{totalDuration.Minutes:D2}:{totalDuration.Seconds:D2}";
        
                 trackBarUpdateTimer.Start();
-                CaptureAudioData();
+  
             }
         }// end of PlayCurrentTrack
 
@@ -141,10 +143,12 @@ namespace MusicPlayerDemo
             try
             {
                 // load audio file
-                TagLib.File file = TagLib.File.Create(filePath);   
+                TagLib.File file = TagLib.File.Create(filePath); 
+                
                 //extract the artist name from metadata
                 string artist = file.Tag.FirstPerformer;
                 string title = file.Tag.Title;
+
                 // conditonal operation to check if the artist or title are null/empty.
                 ArtistNameLabel.Text = string.IsNullOrEmpty(artist) ? "Unknown" : artist;
                 selectedFileLabel.Text = string.IsNullOrEmpty(title) ? System.IO.Path.GetFileNameWithoutExtension(filePath) : title;    
@@ -164,6 +168,7 @@ namespace MusicPlayerDemo
             // Fetch and set the default system audio volume
             defaultPlaybackDevice = (new MMDeviceEnumerator()).GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
             float defaultVolume = defaultPlaybackDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
+
             // Set the initial value of the VolumeTrackBar based on the default system volume
             int trackBarValue = (int)(defaultVolume * 100);
             VolumeTrackBar.Value = trackBarValue;
@@ -173,8 +178,8 @@ namespace MusicPlayerDemo
         private void UpdatePlaylistCountLabel()
         {
 
-            // Update the label to display the number of audio files in the playlist
-            playlistCountLabel.Text = "Playlist Count: " + playlist.Count.ToString();
+            
+            playlistCountLabel.Text = "Playlist Count: " + playlist.Count.ToString();               // Update the label to display the number of audio files in the playlist
 
         }// end of UpdatePlaylistCountLabel
 
@@ -192,6 +197,7 @@ namespace MusicPlayerDemo
 
             // Update the ComboBox with the playlist
             playlistComboBox.Items.Clear();
+
             // Extract only the file names
             var fileNames = playlist.Select(Path.GetFileNameWithoutExtension).ToArray();
             playlistComboBox.Items.AddRange(fileNames);
@@ -232,7 +238,7 @@ namespace MusicPlayerDemo
                 UpdateNextPreviousButtons();
                 UpdatePlaylistCountLabel();            
             }
-            if (wavePlayer != null && wavePlayer.PlaybackState == PlaybackState.Playing) // Stop the current track if playing
+            if (wavePlayer != null && wavePlayer.PlaybackState == PlaybackState.Playing)            // Stop the current track if playing
             {
                 wavePlayer.Stop();
             }
@@ -380,35 +386,32 @@ namespace MusicPlayerDemo
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
 
-                // Add the selected files to the playlist history
-                foreach (var filePath in openFileDialog.FileNames)
-                {
-                    // Check if the file is not already in the playlist before adding
-                    if (!playlist.Contains(filePath))
+                foreach (var filePath in openFileDialog.FileNames)          // Add the selected files to the playlist history
+                {       
+                    if (!playlist.Contains(filePath))                       // Check if the file is not already in the playlist before adding
                     {
-                        // Add the selected file to the playlist
-                        playlist.Add(filePath);
+                        playlist.Add(filePath);                             // Add the selected file to the playlist
                     }
                 }
+
                 // Update the ComboBox with the playlist
                 UpdatePlaylistComboBox(currentTrackIndex);
                 currentTrackIndex = playlist.Count - 1;
 
-                // Set the label text to the selected file name
                 if (playlist.Count > 0)
                 {
-                    FetchTrackInfo(playlist[currentTrackIndex]);  
+                    FetchTrackInfo(playlist[currentTrackIndex]);            // Set the label text to the selected file name
                 }
 
                 UpdatePlaylistCountLabel();
                 UpdateNextPreviousButtons();
                 PlayCurrentTrack();
                 
-
             }
         }// end of openToolStripMenuItemClick
         private void exitToolStripMenuItemClick(object sender, EventArgs e)
         {
+
             Application.Exit();
 
         }// end of exitToolStripMenuItemClick
@@ -420,11 +423,14 @@ namespace MusicPlayerDemo
             {
                 PlayCurrentTrack();
             }
+
         }//end of PlayButtonClick
 
         private void PauseButtonClick(object sender, EventArgs e)
         {
+
             wavePlayer.Pause();
+
         }// end of PasueButtonClick
 
         private void PreviousButtonClick(object sender, EventArgs e)
@@ -444,7 +450,6 @@ namespace MusicPlayerDemo
         {
 
             currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;
-
             if (playlist.Count > 0)
             {
                 FetchTrackInfo(playlist[currentTrackIndex]);
