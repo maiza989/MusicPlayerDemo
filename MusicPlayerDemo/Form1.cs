@@ -1,10 +1,11 @@
 /*
  * ## TODO
- * Volume Fading:
- * Smoothly fade the volume in and out when starting or stopping a track to prevent abrupt changes in audio levels.
- *
+ * Audio Visualization:
+ * Include a visualizer to provide a dynamic representation of the audio being played.
+ * ---
  * ## WAIT LIST
- * 
+ * Volume Fading:
+ * Smoothly fade the volume in and out when starting or stopping a track to prevent abrupt changes in audio levels. 
  * ---
  * 
  */
@@ -14,6 +15,7 @@ using Timer = System.Windows.Forms.Timer;
 using NAudio.CoreAudioApi;
 using NAudio.Gui;
 using TagLib;
+using System.Runtime.CompilerServices;
 
 
 
@@ -25,6 +27,10 @@ namespace MusicPlayerDemo
         private Random random = new Random();
         private List<string> playlist;
         private int currentTrackIndex = 0;
+        private const int fadingDurationMilliseconds = 1000; // Adjust fading duration as needed
+        private const int fadingIntervalMilliseconds = 100;   // Adjust fading interval as needed
+        private const int fadingThresholdMilliseconds = 1000; // Threshold to start fading (1 second before the end)
+
 
         private IWavePlayer wavePlayer; // audio player
         private AudioFileReader audioFileReader;
@@ -40,22 +46,41 @@ namespace MusicPlayerDemo
         public Form1()
         {
             InitializeComponent();
+            FetchSystemVolumeLevel();
             wavePlayer = new WaveOutEvent(); // Initialize WaveOutEvent
             playlist = new List<string>();
+
+            this.FormBorderStyle = FormBorderStyle.Fixed3D; // Set the form's border style to fixed order
+            this.MinimumSize = new Size(450, 350); // Adjust the dimensions as needed (
 
             // Initialize the Timer for updating the TrackBar
             trackBarUpdateTimer = new Timer();
             trackBarUpdateTimer.Interval = 100; // Set the interval in milliseconds (adjust as needed)
             trackBarUpdateTimer.Tick += TrackBarUpdateTimerTick;
 
-            FetchSystemVolumeLevel();
-            
             VolumeTrackBar.Scroll += VolumeTrackBarScroll;// Subscribe to the Scroll event of the volume trackbar
             playlistComboBox.SelectedIndexChanged += PlaylistComboBoxSelectedIndexChanged;// Subscribe to Combobox event.
             LoopingCheckBox.CheckedChanged += LoopingCheckBoxCheckedChanged;// Subscribe to Checked box changed event for looping. 
             ShuffleButton.CheckedChanged += ShuffleCheckBoxCheckedChanged;// Sbuscribe to check box changed event for shuffle
             trackBar.MouseUp += SeekingTrackBarMouseUp; // subscribe to MouseUp event for audio trackBar seeking feature.
             trackBar.Scroll += SeekingTrackBarScroll; // subscribe to Scroll event for audio trackBar seeking feature.
+
+            // Set anchor properties for UI controls
+            trackBar.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+            DurationLabel.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+            PlayButton.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            PauseButton.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            PreviousButton.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            NextButton.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            LoopingCheckBox.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            ShuffleButton.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+
+            VolumeTrackBar.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            SoundLevelLabel.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+
+            playlistComboBox.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            playlistCountLabel.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            selectedFileLabel.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
 
         }// end of Form1
 
@@ -106,6 +131,7 @@ namespace MusicPlayerDemo
                 DurationLabel.Text = $"{totalDuration.Hours:D2}:{totalDuration.Minutes:D2}:{totalDuration.Seconds:D2}";
        
                 trackBarUpdateTimer.Start();
+                CaptureAudioData();
             }
         }// end of PlayCurrentTrack
 
@@ -227,7 +253,7 @@ namespace MusicPlayerDemo
                 TimeSpan remainingTime = audioFileReader.TotalTime - audioFileReader.CurrentTime;
                 DurationLabel.Text = $"{remainingTime.Hours:D2}:{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
 
-                if(remainingTime.TotalSeconds <= 0)
+                if (remainingTime.TotalSeconds <= 0)
                 {      
                     trackBarUpdateTimer.Stop();
                     wavePlayer.Stop();   
@@ -328,6 +354,19 @@ namespace MusicPlayerDemo
 
         }// end of ShuffleCheckBoxCheckedChanged
 
+        /*private async Task FadeOutVolume()
+        {
+            float initialVolume = VolumeTrackBar.Value / 100f;
+            float targetVolume = 0.0f; // Mute
+            float volumeDecrement = (initialVolume - targetVolume) / (fadingDurationMilliseconds / fadingIntervalMilliseconds);
+
+            for (float volume = initialVolume; volume > targetVolume; volume -= volumeDecrement)
+            {
+                UpdateVolume(volume);
+                await Task.Delay(fadingIntervalMilliseconds);
+            }
+        }*/
+
         //---------------------------------------------------------------------------------------------------------------
         //                                      BUTTONS
         //---------------------------------------------------------------------------------------------------------------
@@ -363,8 +402,9 @@ namespace MusicPlayerDemo
 
                 UpdatePlaylistCountLabel();
                 UpdateNextPreviousButtons();
-                PlayCurrentTrack(); 
+                PlayCurrentTrack();
                 
+
             }
         }// end of openToolStripMenuItemClick
         private void exitToolStripMenuItemClick(object sender, EventArgs e)
@@ -392,7 +432,7 @@ namespace MusicPlayerDemo
             currentTrackIndex = (currentTrackIndex - 1 + playlist.Count) % playlist.Count;
 
             if (playlist.Count > 0)
-            {
+            {    
                 FetchTrackInfo(playlist[currentTrackIndex]);
                 UpdatePlaylistCountLabel();
                 UpdateNextPreviousButtons();

@@ -42,15 +42,17 @@
             playlistComboBox = new ComboBox();
             trackBar = new TrackBar();
             VolumeTrackBar = new TrackBar();
-            label1 = new Label();
+            SoundLevelLabel = new Label();
             DurationLabel = new Label();
             LoopingCheckBox = new CheckBox();
             ShuffleButton = new CheckBox();
             PlaylistLabel = new Label();
             ArtistNameLabel = new Label();
+            WaveVisualizerPictureBox = new PictureBox();
             menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)WaveVisualizerPictureBox).BeginInit();
             SuspendLayout();
             // 
             // menuStrip2
@@ -168,14 +170,14 @@
             VolumeTrackBar.TabIndex = 13;
             VolumeTrackBar.Value = 10;
             // 
-            // label1
+            // SoundLevelLabel
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(273, 274);
-            label1.Name = "label1";
-            label1.Size = new Size(71, 15);
-            label1.TabIndex = 14;
-            label1.Text = "Sound Level";
+            SoundLevelLabel.AutoSize = true;
+            SoundLevelLabel.Location = new Point(273, 274);
+            SoundLevelLabel.Name = "SoundLevelLabel";
+            SoundLevelLabel.Size = new Size(71, 15);
+            SoundLevelLabel.TabIndex = 14;
+            SoundLevelLabel.Text = "Sound Level";
             // 
             // DurationLabel
             // 
@@ -222,18 +224,27 @@
             ArtistNameLabel.Size = new Size(0, 15);
             ArtistNameLabel.TabIndex = 19;
             // 
+            // WaveVisualizerPictureBox
+            // 
+            WaveVisualizerPictureBox.Location = new Point(0, 260);
+            WaveVisualizerPictureBox.Name = "WaveVisualizerPictureBox";
+            WaveVisualizerPictureBox.Size = new Size(181, 50);
+            WaveVisualizerPictureBox.TabIndex = 20;
+            WaveVisualizerPictureBox.TabStop = false;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Window;
             ClientSize = new Size(466, 308);
+            Controls.Add(WaveVisualizerPictureBox);
             Controls.Add(ArtistNameLabel);
             Controls.Add(PlaylistLabel);
             Controls.Add(ShuffleButton);
             Controls.Add(LoopingCheckBox);
             Controls.Add(DurationLabel);
-            Controls.Add(label1);
+            Controls.Add(SoundLevelLabel);
             Controls.Add(VolumeTrackBar);
             Controls.Add(trackBar);
             Controls.Add(playlistComboBox);
@@ -251,6 +262,7 @@
             menuStrip2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)WaveVisualizerPictureBox).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -271,11 +283,12 @@
         private ComboBox playlistComboBox;
         private TrackBar trackBar;
         private TrackBar VolumeTrackBar;
-        private Label label1;
+        private Label SoundLevelLabel;
         private Label DurationLabel;
         private CheckBox LoopingCheckBox;
         private CheckBox ShuffleButton;
         private Label PlaylistLabel;
         private Label ArtistNameLabel;
+        private PictureBox WaveVisualizerPictureBox;
     }
 }
