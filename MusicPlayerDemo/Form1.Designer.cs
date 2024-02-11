@@ -31,6 +31,7 @@
             menuStrip2 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             openToolStripMenuItem = new ToolStripMenuItem();
+            DarkModeButton = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
             openFileDialog1 = new OpenFileDialog();
             PlayButton = new Button();
@@ -64,7 +65,7 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, DarkModeButton, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "File";
@@ -72,14 +73,21 @@
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(103, 22);
+            openToolStripMenuItem.Size = new Size(132, 22);
             openToolStripMenuItem.Text = "Open";
             openToolStripMenuItem.Click += openToolStripMenuItem_Click;
+            // 
+            // DarkModeButton
+            // 
+            DarkModeButton.Name = "DarkModeButton";
+            DarkModeButton.Size = new Size(132, 22);
+            DarkModeButton.Text = "Dark Mode";
+            DarkModeButton.Click += DarkModeButtonClick;
             // 
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(103, 22);
+            exitToolStripMenuItem.Size = new Size(132, 22);
             exitToolStripMenuItem.Text = "Exit";
             exitToolStripMenuItem.Click += exitToolStripMenuItemClick;
             // 
@@ -130,7 +138,7 @@
             // selectedFileLabel
             // 
             selectedFileLabel.AutoSize = true;
-            selectedFileLabel.Location = new Point(174, 102);
+            selectedFileLabel.Location = new Point(157, 98);
             selectedFileLabel.Name = "selectedFileLabel";
             selectedFileLabel.Size = new Size(0, 15);
             selectedFileLabel.TabIndex = 8;
@@ -153,7 +161,7 @@
             // 
             // trackBar
             // 
-            trackBar.Location = new Point(100, 143);
+            trackBar.Location = new Point(88, 143);
             trackBar.Maximum = 100;
             trackBar.Name = "trackBar";
             trackBar.Size = new Size(284, 45);
@@ -217,7 +225,7 @@
             // ArtistNameLabel
             // 
             ArtistNameLabel.AutoSize = true;
-            ArtistNameLabel.Location = new Point(174, 125);
+            ArtistNameLabel.Location = new Point(157, 121);
             ArtistNameLabel.Name = "ArtistNameLabel";
             ArtistNameLabel.Size = new Size(0, 15);
             ArtistNameLabel.TabIndex = 19;
@@ -277,5 +285,6 @@
         private CheckBox ShuffleButton;
         private Label PlaylistLabel;
         private Label ArtistNameLabel;
+        private ToolStripMenuItem DarkModeButton;
     }
 }

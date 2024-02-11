@@ -18,13 +18,14 @@ using NAudio.CoreAudioApi;
 using NAudio.Gui;
 using TagLib;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms;
 
 
 
 
 namespace MusicPlayerDemo
 {
-    public partial class Form1 : Form 
+    public partial class Form1 : Form
     {
 
         private Random random = new Random();
@@ -44,11 +45,13 @@ namespace MusicPlayerDemo
         private bool isLooping = false;                             // loop feature
         private bool isShuffle = false;                             // shuffle feature
         private bool isSeeking = false;                             // Seeking feature
+        private bool isDarkMode = false;                            // Dark Theme feature
 
-        
+
         public Form1()
         {
             InitializeComponent();
+            SetDarkMode(this);
             FetchSystemVolumeLevel();
             wavePlayer = new WaveOutEvent();                           // Initialize WaveOutEvent
             playlist = new List<string>();
@@ -92,7 +95,7 @@ namespace MusicPlayerDemo
         //------------------------------------------------------------------------------------------------------
 
         private void PlayCurrentTrack()
-        {           
+        {
 
             if (playlist != null && playlist.Count > 0 && currentTrackIndex < playlist.Count)
             {
@@ -114,7 +117,7 @@ namespace MusicPlayerDemo
                  * An iff statement to check if the loop or shuffle button is checked
                  * If so subscribe to the method of the buttoned check and fetch the track infromation.
                  */
-                if(isLooping)
+                if (isLooping)
                 {
                     wavePlayer.PlaybackStopped += LoopCurrentTrack;
                     FetchTrackInfo(playlist[currentTrackIndex]);
@@ -132,29 +135,29 @@ namespace MusicPlayerDemo
                 trackBar.Maximum = (int)audioFileReader.TotalTime.TotalSeconds;                                                  // Set the maximum value of the TrackBar to the total duration of the audio file
                 TimeSpan totalDuration = audioFileReader.TotalTime;                                                              // Set the durationLabel text based on the total duration of the audio file
                 DurationLabel.Text = $"{totalDuration.Hours:D2}:{totalDuration.Minutes:D2}:{totalDuration.Seconds:D2}";
-       
+
                 trackBarUpdateTimer.Start();
-  
+
             }
         }// end of PlayCurrentTrack
 
         private void FetchTrackInfo(string filePath)
-        {   
-            
+        {
+
             try
             {
                 // load audio file
-                TagLib.File file = TagLib.File.Create(filePath); 
-                
+                TagLib.File file = TagLib.File.Create(filePath);
+
                 //extract the artist name from metadata
                 string artist = file.Tag.FirstPerformer;
                 string title = file.Tag.Title;
 
                 // conditonal operation to check if the artist or title are null/empty.
                 ArtistNameLabel.Text = string.IsNullOrEmpty(artist) ? "Unknown" : artist;
-                selectedFileLabel.Text = string.IsNullOrEmpty(title) ? System.IO.Path.GetFileNameWithoutExtension(filePath) : title;    
+                selectedFileLabel.Text = string.IsNullOrEmpty(title) ? System.IO.Path.GetFileNameWithoutExtension(filePath) : title;
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 Console.WriteLine("Error extracting metadata for artist name" + ex.Message);
                 ArtistNameLabel.Text = "Unknown";
@@ -179,7 +182,7 @@ namespace MusicPlayerDemo
         private void UpdatePlaylistCountLabel()
         {
 
-            
+
             playlistCountLabel.Text = "Playlist Count: " + playlist.Count.ToString();               // Update the label to display the number of audio files in the playlist
 
         }// end of UpdatePlaylistCountLabel
@@ -193,7 +196,7 @@ namespace MusicPlayerDemo
 
         }// end of UpdateNextPreviousButtons
 
-        private void UpdatePlaylistComboBox(int currentIndex) 
+        private void UpdatePlaylistComboBox(int currentIndex)
         {
 
             playlistComboBox.Items.Clear();
@@ -215,7 +218,7 @@ namespace MusicPlayerDemo
         private void VolumeTrackBarScroll(object sender, EventArgs e)
         {
 
-            
+
             float volume = VolumeTrackBar.Value / 100f;                                             // Calculate the volume from the trackbar value (0 to 100)
             UpdateVolume(volume);
 
@@ -233,7 +236,7 @@ namespace MusicPlayerDemo
                 FetchTrackInfo(playlist[currentTrackIndex]);
                 trackBar.Value = 0;
                 UpdateNextPreviousButtons();
-                UpdatePlaylistCountLabel();            
+                UpdatePlaylistCountLabel();
             }
             if (wavePlayer != null && wavePlayer.PlaybackState == PlaybackState.Playing)            // Stop the current track if playing
             {
@@ -257,9 +260,9 @@ namespace MusicPlayerDemo
                 DurationLabel.Text = $"{remainingTime.Hours:D2}:{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
 
                 if (remainingTime.TotalSeconds <= 0)
-                {      
+                {
                     trackBarUpdateTimer.Stop();
-                    wavePlayer.Stop();   
+                    wavePlayer.Stop();
                 }
             }
 
@@ -270,20 +273,20 @@ namespace MusicPlayerDemo
             // Calculate the position to seek to based on the TrackBar value
             if (audioFileReader != null)
             {
-                // Check if the audio file reader is playing or paused before seeking
-                if (wavePlayer.PlaybackState == PlaybackState.Playing || wavePlayer.PlaybackState == PlaybackState.Paused)
+
+                if (wavePlayer.PlaybackState == PlaybackState.Playing || wavePlayer.PlaybackState == PlaybackState.Paused)          // Check if the audio file reader is playing or paused before seeking
                 {
-                    // Pause playback while seeking to avoid audio glitches
+
                     if (wavePlayer.PlaybackState == PlaybackState.Playing)
                     {
-                        wavePlayer.Pause();
+                        wavePlayer.Pause();                                                                                         // Pause playback while seeking to avoid audio glitches
                     }
 
                     // Seek to the desired position
                     TimeSpan newPosition = TimeSpan.FromSeconds(trackBar.Value);
                     audioFileReader.CurrentTime = newPosition;
-                    
-                    isSeeking = true; // set seeking flag to true
+
+                    isSeeking = true;                                                   // set seeking flag to true
                 }
             }
         }// end of SeekingTrackBarScroll
@@ -291,14 +294,14 @@ namespace MusicPlayerDemo
         private void SeekingTrackBarMouseUp(object sender, MouseEventArgs e)
         {
 
-            // Resume playback if it was paused due to seeking
+
             if (isSeeking && wavePlayer.PlaybackState == PlaybackState.Paused)
             {
-                wavePlayer.Play();
+                wavePlayer.Play();              // Resume playback if it was paused due to seeking
             }
 
-            // Reset the seeking flag
-            isSeeking = false;
+
+            isSeeking = false;                  // Reset the seeking flag
 
         }
         private void ShuffleNextTrack(object sender, StoppedEventArgs e)
@@ -306,19 +309,19 @@ namespace MusicPlayerDemo
 
             if (isShuffle)
             {
-                // Choose a random track index different from the current one
+
                 int nextIndex;
                 do
                 {
-                    nextIndex = random.Next(0, playlist.Count);
+                    nextIndex = random.Next(0, playlist.Count);                      // Choose a random track index different from the current one
                 } while (nextIndex == currentTrackIndex);
 
                 currentTrackIndex = nextIndex;
             }
             else
             {
-                // Move to the next track in a sequential order
-                currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;
+
+                currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;        // Move to the next track in a sequential order
             }
 
             PlayCurrentTrack();
@@ -331,9 +334,9 @@ namespace MusicPlayerDemo
             if (isLooping)
             {
 
-                if (e.Exception != null) // If the playback stopped due to an exception, handle it here
+                if (e.Exception != null)
                 {
-                    Console.WriteLine("Playback stopped with exception: " + e.Exception.Message);
+                    Console.WriteLine("Playback stopped with exception: " + e.Exception.Message);           // If the playback stopped due to an exception, handle it here
                 }
                 PlayCurrentTrack();
 
@@ -356,6 +359,81 @@ namespace MusicPlayerDemo
             isLooping = false;
 
         }// end of ShuffleCheckBoxCheckedChanged
+
+        private void SetDarkMode(Control control)
+        {
+
+            //this.BackColor = Color.FromArgb(40, 40, 40);                            // Set dark mode colors for UI elements
+           
+
+            control.BackColor = Color.FromArgb(40, 40, 40);
+            control.ForeColor = Color.White;
+            foreach (Control c in control.Controls )
+            {
+                SetDarkMode(c);
+            }
+            
+
+            /* PlayButton.BackColor = Color.FromArgb(64, 64, 64);
+             PlayButton.ForeColor = Color.White;
+             PauseButton.BackColor = Color.FromArgb(64, 64, 64);
+             PauseButton.ForeColor = Color.White;
+             PreviousButton.BackColor = Color.FromArgb(64, 64,64);
+             PreviousButton.ForeColor = Color.White;
+             NextButton.BackColor = Color.FromArgb(64, 64, 64);
+             NextButton.ForeColor = Color.White;
+             playlistComboBox.BackColor = Color.FromArgb(64, 64, 64);
+             playlistComboBox.ForeColor = Color.White;
+
+
+             ShuffleButton.ForeColor = Color.White;
+             LoopingCheckBox.ForeColor = Color.White;
+             SoundLevelLabel.ForeColor = Color.White;
+             playlistCountLabel.ForeColor = Color.White; 
+             PlaylistLabel.ForeColor = Color.White;
+             selectedFileLabel.ForeColor = Color.White;
+             ArtistNameLabel.ForeColor = Color.White;
+             DurationLabel.ForeColor = Color.White;*/
+
+
+        }// end of SetDarkMode
+
+        private void SetLightMode(Control control)
+        {
+
+            // this.BackColor = SystemColors.Control;                                  // Set light mode colors for UI elements
+
+            control.BackColor = SystemColors.Control;
+            control.ForeColor = SystemColors.ControlText;
+
+            foreach (Control c in control.Controls)
+            {
+                SetLightMode(c);
+            }
+
+            /* PlayButton.BackColor = SystemColors.Control;
+             PlayButton.ForeColor = SystemColors.ControlText;
+             PauseButton.BackColor = SystemColors.Control;
+             PauseButton.ForeColor = SystemColors.ControlText;
+             PreviousButton.BackColor = SystemColors.Control;
+             PreviousButton.ForeColor = SystemColors.ControlText;
+             NextButton.BackColor = SystemColors.Control;
+             NextButton.ForeColor = SystemColors.ControlText;
+             playlistComboBox.BackColor = SystemColors.Control;
+             playlistComboBox.ForeColor = SystemColors.ControlText;
+
+             ShuffleButton.ForeColor = SystemColors.ControlText;
+             LoopingCheckBox.ForeColor = SystemColors.ControlText;
+             SoundLevelLabel.ForeColor = SystemColors.ControlText;
+             playlistCountLabel.ForeColor = SystemColors.ControlText;
+             PlaylistLabel.ForeColor = SystemColors.ControlText;
+             selectedFileLabel.ForeColor = SystemColors.ControlText;
+             ArtistNameLabel.ForeColor = SystemColors.ControlText;
+             DurationLabel.ForeColor = SystemColors.ControlText;
+            */
+         }
+
+       
 
         /*private async Task FadeOutVolume()
         {
@@ -384,7 +462,7 @@ namespace MusicPlayerDemo
             {
 
                 foreach (var filePath in openFileDialog.FileNames)          // Add the selected files to the playlist history
-                {       
+                {
                     if (!playlist.Contains(filePath))                       // Check if the file is not already in the playlist before adding
                     {
                         playlist.Add(filePath);                             // Add the selected file to the playlist
@@ -403,7 +481,7 @@ namespace MusicPlayerDemo
                 UpdatePlaylistCountLabel();
                 UpdateNextPreviousButtons();
                 PlayCurrentTrack();
-                
+
             }
         }// end of openToolStripMenuItemClick
         private void exitToolStripMenuItemClick(object sender, EventArgs e)
@@ -416,7 +494,7 @@ namespace MusicPlayerDemo
         private void PlayButtonClick(object sender, EventArgs e)
         {
             wavePlayer.Play();
-            if(wavePlayer.PlaybackState  == PlaybackState.Stopped)
+            if (wavePlayer.PlaybackState == PlaybackState.Stopped)
             {
                 PlayCurrentTrack();
             }
@@ -435,12 +513,12 @@ namespace MusicPlayerDemo
             currentTrackIndex = (currentTrackIndex - 1 + playlist.Count) % playlist.Count;
 
             if (playlist.Count > 0)
-            {    
+            {
                 FetchTrackInfo(playlist[currentTrackIndex]);
                 UpdatePlaylistCountLabel();
                 UpdateNextPreviousButtons();
                 PlayCurrentTrack();
-            }  
+            }
         }// end of PreviousButtonClick
 
         private void NextButtonClick(object sender, EventArgs e)
@@ -455,5 +533,19 @@ namespace MusicPlayerDemo
                 PlayCurrentTrack();
             }
         }// end of NextButtonClick
+
+        private void DarkModeButtonClick(object sender, EventArgs e)
+        {
+            
+            if (isDarkMode)
+            {
+                SetDarkMode(this);
+            }
+            else
+            {
+                SetLightMode(this);
+            }
+            isDarkMode = !isDarkMode;
+        }
     }// end of partial call Form1
 }// end of namespace
