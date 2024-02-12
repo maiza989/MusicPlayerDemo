@@ -1,5 +1,9 @@
 /*
  * ## TODO
+ * Show Album cover. 
+ * 
+ * ---
+ * ## DONE
  * Theme Customization: Allow users to choose different themes or customize the appearance of the application
  * 
  * ---
@@ -152,6 +156,7 @@ namespace MusicPlayerDemo
                 //extract the artist name from metadata
                 string artist = file.Tag.FirstPerformer;
                 string title = file.Tag.Title;
+                
 
                 // conditonal operation to check if the artist or title are null/empty.
                 ArtistNameLabel.Text = string.IsNullOrEmpty(artist) ? "Unknown" : artist;
