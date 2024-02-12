@@ -49,9 +49,13 @@
             ShuffleButton = new CheckBox();
             PlaylistLabel = new Label();
             ArtistNameLabel = new Label();
+            AlbumPictureBox = new PictureBox();
+            BackwardButton = new Button();
+            FastFowardButton = new Button();
             menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)AlbumPictureBox).BeginInit();
             SuspendLayout();
             // 
             // menuStrip2
@@ -127,12 +131,13 @@
             // 
             // NextButton
             // 
+            NextButton.BackColor = SystemColors.Window;
             NextButton.Location = new Point(326, 113);
             NextButton.Name = "NextButton";
             NextButton.Size = new Size(99, 23);
             NextButton.TabIndex = 6;
             NextButton.Text = "Next";
-            NextButton.UseVisualStyleBackColor = true;
+            NextButton.UseVisualStyleBackColor = false;
             NextButton.Click += NextButtonClick;
             // 
             // selectedFileLabel
@@ -230,12 +235,43 @@
             ArtistNameLabel.Size = new Size(0, 15);
             ArtistNameLabel.TabIndex = 19;
             // 
+            // AlbumPictureBox
+            // 
+            AlbumPictureBox.Location = new Point(244, 47);
+            AlbumPictureBox.Name = "AlbumPictureBox";
+            AlbumPictureBox.Size = new Size(100, 50);
+            AlbumPictureBox.TabIndex = 20;
+            AlbumPictureBox.TabStop = false;
+            // 
+            // BackwardButton
+            // 
+            BackwardButton.Location = new Point(44, 142);
+            BackwardButton.Name = "BackwardButton";
+            BackwardButton.Size = new Size(38, 23);
+            BackwardButton.TabIndex = 21;
+            BackwardButton.Text = "-15";
+            BackwardButton.UseVisualStyleBackColor = true;
+            BackwardButton.Click += BackwardButtonClick;
+            // 
+            // FastFowardButton
+            // 
+            FastFowardButton.Location = new Point(378, 143);
+            FastFowardButton.Name = "FastFowardButton";
+            FastFowardButton.Size = new Size(36, 23);
+            FastFowardButton.TabIndex = 22;
+            FastFowardButton.Text = "+15";
+            FastFowardButton.UseVisualStyleBackColor = true;
+            FastFowardButton.Click += FastFowardButtonClick;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Window;
             ClientSize = new Size(466, 308);
+            Controls.Add(FastFowardButton);
+            Controls.Add(BackwardButton);
+            Controls.Add(AlbumPictureBox);
             Controls.Add(ArtistNameLabel);
             Controls.Add(PlaylistLabel);
             Controls.Add(ShuffleButton);
@@ -259,6 +295,7 @@
             menuStrip2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)AlbumPictureBox).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -286,5 +323,8 @@
         private Label PlaylistLabel;
         private Label ArtistNameLabel;
         private ToolStripMenuItem DarkModeButton;
+        private PictureBox AlbumPictureBox;
+        private Button BackwardButton;
+        private Button FastFowardButton;
     }
 }

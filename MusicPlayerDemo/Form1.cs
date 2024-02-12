@@ -1,11 +1,14 @@
 /*
  * ## TODO
- * Show Album cover. 
+ *  
  * 
  * ---
  * ## DONE
  * Theme Customization: Allow users to choose different themes or customize the appearance of the application
- * 
+ * ---
+ * Show Album cover.
+ * ---
+ * Track Fast foward and backward: Allow users to fast foward the audio by 15 seconds or backward by 15 seconds. 
  * ---
  * ## WAIT LIST
  * Volume Fading:
@@ -150,17 +153,33 @@ namespace MusicPlayerDemo
 
             try
             {
-                // load audio file
-                TagLib.File file = TagLib.File.Create(filePath);
+
+                TagLib.File file = TagLib.File.Create(filePath);                             // load audio file
 
                 //extract the artist name from metadata
                 string artist = file.Tag.FirstPerformer;
                 string title = file.Tag.Title;
-                
 
                 // conditonal operation to check if the artist or title are null/empty.
                 ArtistNameLabel.Text = string.IsNullOrEmpty(artist) ? "Unknown" : artist;
                 selectedFileLabel.Text = string.IsNullOrEmpty(title) ? System.IO.Path.GetFileNameWithoutExtension(filePath) : title;
+
+                if (file.Tag.Pictures.Length > 0)                                             // Extract album art if available
+                {
+                    var picture = file.Tag.Pictures[0];                                      // Get the first picture
+                    using (MemoryStream ms = new MemoryStream(picture.Data.Data))            // Convert album art to Image
+                    {
+                        Image albumArt = Image.FromStream(ms);
+                        AlbumPictureBox.Image = albumArt;                                    // Display the album art
+
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No Image was found");
+                    AlbumPictureBox.Image = null;                                            // No album cover is found , set it to null
+                                                                                             // Could set a default image if no image is found. 
+                }
             }
             catch (Exception ex)
             {
@@ -369,15 +388,15 @@ namespace MusicPlayerDemo
         {
 
             //this.BackColor = Color.FromArgb(40, 40, 40);                            // Set dark mode colors for UI elements
-           
+
 
             control.BackColor = Color.FromArgb(40, 40, 40);
             control.ForeColor = Color.White;
-            foreach (Control c in control.Controls )
+            foreach (Control c in control.Controls)
             {
                 SetDarkMode(c);
             }
-            
+
 
             /* PlayButton.BackColor = Color.FromArgb(64, 64, 64);
              PlayButton.ForeColor = Color.White;
@@ -436,9 +455,9 @@ namespace MusicPlayerDemo
              ArtistNameLabel.ForeColor = SystemColors.ControlText;
              DurationLabel.ForeColor = SystemColors.ControlText;
             */
-         }
+        }
 
-       
+
 
         /*private async Task FadeOutVolume()
         {
@@ -515,7 +534,7 @@ namespace MusicPlayerDemo
 
         private void PreviousButtonClick(object sender, EventArgs e)
         {
-            currentTrackIndex = (currentTrackIndex - 1 + playlist.Count) % playlist.Count;
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.Count) % playlist.Count;          // Move to the preivous track
 
             if (playlist.Count > 0)
             {
@@ -529,7 +548,7 @@ namespace MusicPlayerDemo
         private void NextButtonClick(object sender, EventArgs e)
         {
 
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;                           // Move to the next track
             if (playlist.Count > 0)
             {
                 FetchTrackInfo(playlist[currentTrackIndex]);
@@ -537,11 +556,12 @@ namespace MusicPlayerDemo
                 UpdateNextPreviousButtons();
                 PlayCurrentTrack();
             }
+
         }// end of NextButtonClick
 
         private void DarkModeButtonClick(object sender, EventArgs e)
         {
-            
+
             if (isDarkMode)
             {
                 SetDarkMode(this);
@@ -551,6 +571,70 @@ namespace MusicPlayerDemo
                 SetLightMode(this);
             }
             isDarkMode = !isDarkMode;
-        }
+
+        }// end of DarkModeButtonClick
+
+        private void BackwardButtonClick(object sender, EventArgs e)
+        {
+            try 
+            {
+                if (audioFileReader != null)
+                {
+
+                    TimeSpan newTime = audioFileReader.CurrentTime - TimeSpan.FromSeconds(15);            // Rewind Track by 15 seconds
+                    if (newTime >= TimeSpan.Zero)
+                    {
+                        audioFileReader.CurrentTime = newTime;
+                    }
+                    else
+                    {
+                        audioFileReader.CurrentTime = TimeSpan.Zero;
+                        PlayCurrentTrack();                                                               // Play current track in when reach start of the track
+                    }
+                }
+                else
+                {
+                    wavePlayer.Stop();
+                }
+            }
+            catch(Exception ex) 
+            {
+                Console.WriteLine("Issue has occured while using the backward button" + ex.Message);      // Stop Audio when error happen
+                audioFileReader.CurrentTime = TimeSpan.Zero;
+                wavePlayer.Stop();
+                //PreviousButtonClick(sender, e);
+            } 
+        }// end of BackwardButtonClick
+
+        private void FastFowardButtonClick(object sender, EventArgs e)
+        {
+            try
+            {
+                if (audioFileReader != null)
+                {
+                    TimeSpan newTime = audioFileReader.CurrentTime + TimeSpan.FromSeconds(15);            // Fast-forward Track by 15 seconds
+                    if (newTime <= audioFileReader.TotalTime)
+                    {
+                        audioFileReader.CurrentTime = newTime;
+                    }
+                    else
+                    {
+                        audioFileReader.CurrentTime = audioFileReader.TotalTime;
+                        NextButtonClick(sender, e);                                                       // Go to the next track when Fast-forwarding
+                    }
+                }
+                else
+                {
+                    wavePlayer.Stop();
+                }
+            }
+            catch(Exception ex) 
+            {
+                Console.WriteLine("Issue has occured while using the fast-forward button" + ex.Message);   // Stop Audio when error happen
+                audioFileReader.CurrentTime = audioFileReader.TotalTime;
+                wavePlayer.Stop();
+                //NextButtonClick(sender, e);
+            }
+        }// end of FastFowardButtonClick
     }// end of partial call Form1
 }// end of namespace
