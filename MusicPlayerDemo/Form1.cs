@@ -161,24 +161,29 @@ namespace MusicPlayerDemo
                 string title = file.Tag.Title;
 
                 // conditonal operation to check if the artist or title are null/empty.
+                ArtistNameLabel.TextAlign = ContentAlignment.MiddleCenter;
                 ArtistNameLabel.Text = string.IsNullOrEmpty(artist) ? "Unknown" : artist;
+                selectedFileLabel.TextAlign = ContentAlignment.MiddleCenter;
                 selectedFileLabel.Text = string.IsNullOrEmpty(title) ? System.IO.Path.GetFileNameWithoutExtension(filePath) : title;
 
-                if (file.Tag.Pictures.Length > 0)                                             // Extract album art if available
+
+                if (file.Tag.Pictures.Length > 0)                                                       // Extract album art if available
                 {
-                    var picture = file.Tag.Pictures[0];                                      // Get the first picture
-                    using (MemoryStream ms = new MemoryStream(picture.Data.Data))            // Convert album art to Image
+                    var picture = file.Tag.Pictures[0];                                                 // Get the first picture
+                    using (MemoryStream ms = new MemoryStream(picture.Data.Data))                       // Convert album art to Image
                     {
                         Image albumArt = Image.FromStream(ms);
-                        AlbumPictureBox.Image = albumArt;                                    // Display the album art
 
+                        AlbumPictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+                        AlbumPictureBox.Image = ResizeImage(albumArt, AlbumPictureBox.Size);            // Resize Image and display it. 
                     }
                 }
                 else
                 {
                     Console.WriteLine("No Image was found");
-                    AlbumPictureBox.Image = null;                                            // No album cover is found , set it to null
-                                                                                             // Could set a default image if no image is found. 
+                    AlbumPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;                         // No album cover is found , set it to defualt image
+                    AlbumPictureBox.Image = Properties.Resources.ResourceManager.GetObject("Hmmm") as Image;
+
                 }
             }
             catch (Exception ex)
@@ -189,6 +194,35 @@ namespace MusicPlayerDemo
             }
 
         }// end of FetchTrackInfo
+
+        /**
+         * This method resizes an image to fit within a specified size while maintaining its aspect ratio.
+         */
+        private Image ResizeImage(Image image, Size size)
+        {
+            int targetWidth, targetHeight;
+            double aspectRatio = (double)image.Width / image.Height;
+
+            if (image.Width > image.Height)
+            {
+                targetWidth = size.Width;                                               
+                targetHeight = (int)(size.Width / aspectRatio);
+            }
+            else
+            {
+                targetHeight = size.Height;
+                targetWidth = (int)(size.Height * aspectRatio);
+            }
+
+            Bitmap resizedImage = new Bitmap(targetWidth, targetHeight);                   // Create a new bitmap with the calculated target width and height       
+
+            using (Graphics graphics = Graphics.FromImage(resizedImage))
+            {
+                graphics.DrawImage(image, 0, 0, targetWidth, targetHeight);                // Use Graphics object to draw the original image onto the resized bitmap
+            }
+
+            return resizedImage;
+        }// end of ResizeImage
 
         private void FetchSystemVolumeLevel()
         {
@@ -318,14 +352,12 @@ namespace MusicPlayerDemo
         private void SeekingTrackBarMouseUp(object sender, MouseEventArgs e)
         {
 
-
             if (isSeeking && wavePlayer.PlaybackState == PlaybackState.Paused)
             {
-                wavePlayer.Play();              // Resume playback if it was paused due to seeking
+                wavePlayer.Play();                                                      // Resume playback if it was paused due to seeking
             }
 
-
-            isSeeking = false;                  // Reset the seeking flag
+            isSeeking = false;                                                          // Reset the seeking flag
 
         }
         private void ShuffleNextTrack(object sender, StoppedEventArgs e)
@@ -333,19 +365,17 @@ namespace MusicPlayerDemo
 
             if (isShuffle)
             {
-
                 int nextIndex;
                 do
                 {
-                    nextIndex = random.Next(0, playlist.Count);                      // Choose a random track index different from the current one
+                    nextIndex = random.Next(0, playlist.Count);                         // Choose a random track index different from the current one
                 } while (nextIndex == currentTrackIndex);
 
                 currentTrackIndex = nextIndex;
             }
             else
             {
-
-                currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;        // Move to the next track in a sequential order
+                currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;           // Move to the next track in a sequential order
             }
 
             PlayCurrentTrack();
@@ -576,7 +606,7 @@ namespace MusicPlayerDemo
 
         private void BackwardButtonClick(object sender, EventArgs e)
         {
-            try 
+            try
             {
                 if (audioFileReader != null)
                 {
@@ -597,13 +627,13 @@ namespace MusicPlayerDemo
                     wavePlayer.Stop();
                 }
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
-                Console.WriteLine("Issue has occured while using the backward button" + ex.Message);      // Stop Audio when error happen
+                Console.WriteLine($"Issue has occured while using the backward button: {ex.Message}");      // Stop Audio when error happen
                 audioFileReader.CurrentTime = TimeSpan.Zero;
                 wavePlayer.Stop();
                 //PreviousButtonClick(sender, e);
-            } 
+            }
         }// end of BackwardButtonClick
 
         private void FastFowardButtonClick(object sender, EventArgs e)
@@ -628,13 +658,18 @@ namespace MusicPlayerDemo
                     wavePlayer.Stop();
                 }
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
-                Console.WriteLine("Issue has occured while using the fast-forward button" + ex.Message);   // Stop Audio when error happen
+                Console.WriteLine($"Issue has occured while using the fast-forward button: {ex.Message}");   // Stop Audio when error happen
                 audioFileReader.CurrentTime = audioFileReader.TotalTime;
                 wavePlayer.Stop();
                 //NextButtonClick(sender, e);
             }
         }// end of FastFowardButtonClick
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
     }// end of partial call Form1
 }// end of namespace

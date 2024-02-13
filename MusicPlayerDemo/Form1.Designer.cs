@@ -63,7 +63,7 @@
             menuStrip2.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
             menuStrip2.Location = new Point(0, 0);
             menuStrip2.Name = "menuStrip2";
-            menuStrip2.Size = new Size(466, 24);
+            menuStrip2.Size = new Size(497, 24);
             menuStrip2.TabIndex = 1;
             menuStrip2.Text = "menuStrip2";
             // 
@@ -101,7 +101,7 @@
             // 
             // PlayButton
             // 
-            PlayButton.Location = new Point(100, 194);
+            PlayButton.Location = new Point(112, 396);
             PlayButton.Name = "PlayButton";
             PlayButton.Size = new Size(99, 23);
             PlayButton.TabIndex = 2;
@@ -111,7 +111,7 @@
             // 
             // PauseButton
             // 
-            PauseButton.Location = new Point(285, 194);
+            PauseButton.Location = new Point(285, 396);
             PauseButton.Name = "PauseButton";
             PauseButton.Size = new Size(99, 23);
             PauseButton.TabIndex = 3;
@@ -121,9 +121,9 @@
             // 
             // PreviousButton
             // 
-            PreviousButton.Location = new Point(52, 113);
+            PreviousButton.Location = new Point(0, 344);
             PreviousButton.Name = "PreviousButton";
-            PreviousButton.Size = new Size(99, 23);
+            PreviousButton.Size = new Size(61, 23);
             PreviousButton.TabIndex = 5;
             PreviousButton.Text = "Previous";
             PreviousButton.UseVisualStyleBackColor = true;
@@ -132,9 +132,9 @@
             // NextButton
             // 
             NextButton.BackColor = SystemColors.Window;
-            NextButton.Location = new Point(326, 113);
+            NextButton.Location = new Point(432, 344);
             NextButton.Name = "NextButton";
-            NextButton.Size = new Size(99, 23);
+            NextButton.Size = new Size(62, 23);
             NextButton.TabIndex = 6;
             NextButton.Text = "Next";
             NextButton.UseVisualStyleBackColor = false;
@@ -143,10 +143,12 @@
             // selectedFileLabel
             // 
             selectedFileLabel.AutoSize = true;
-            selectedFileLabel.Location = new Point(157, 98);
+            selectedFileLabel.Location = new Point(112, 315);
+            selectedFileLabel.MaximumSize = new Size(400, 30);
             selectedFileLabel.Name = "selectedFileLabel";
             selectedFileLabel.Size = new Size(0, 15);
             selectedFileLabel.TabIndex = 8;
+            selectedFileLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // playlistCountLabel
             // 
@@ -155,6 +157,7 @@
             playlistCountLabel.Name = "playlistCountLabel";
             playlistCountLabel.Size = new Size(0, 15);
             playlistCountLabel.TabIndex = 10;
+            playlistCountLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // playlistComboBox
             // 
@@ -166,7 +169,7 @@
             // 
             // trackBar
             // 
-            trackBar.Location = new Point(88, 143);
+            trackBar.Location = new Point(100, 345);
             trackBar.Maximum = 100;
             trackBar.Name = "trackBar";
             trackBar.Size = new Size(284, 45);
@@ -174,7 +177,7 @@
             // 
             // VolumeTrackBar
             // 
-            VolumeTrackBar.Location = new Point(350, 262);
+            VolumeTrackBar.Location = new Point(390, 448);
             VolumeTrackBar.Maximum = 100;
             VolumeTrackBar.Name = "VolumeTrackBar";
             VolumeTrackBar.Size = new Size(104, 45);
@@ -184,7 +187,7 @@
             // SoundLevelLabel
             // 
             SoundLevelLabel.AutoSize = true;
-            SoundLevelLabel.Location = new Point(273, 274);
+            SoundLevelLabel.Location = new Point(313, 460);
             SoundLevelLabel.Name = "SoundLevelLabel";
             SoundLevelLabel.Size = new Size(71, 15);
             SoundLevelLabel.TabIndex = 14;
@@ -193,7 +196,7 @@
             // DurationLabel
             // 
             DurationLabel.AutoSize = true;
-            DurationLabel.Location = new Point(217, 173);
+            DurationLabel.Location = new Point(229, 375);
             DurationLabel.Name = "DurationLabel";
             DurationLabel.Size = new Size(0, 15);
             DurationLabel.TabIndex = 15;
@@ -201,7 +204,7 @@
             // LoopingCheckBox
             // 
             LoopingCheckBox.AutoSize = true;
-            LoopingCheckBox.Location = new Point(261, 235);
+            LoopingCheckBox.Location = new Point(269, 437);
             LoopingCheckBox.Name = "LoopingCheckBox";
             LoopingCheckBox.Size = new Size(53, 19);
             LoopingCheckBox.TabIndex = 16;
@@ -211,7 +214,7 @@
             // ShuffleButton
             // 
             ShuffleButton.AutoSize = true;
-            ShuffleButton.Location = new Point(134, 235);
+            ShuffleButton.Location = new Point(166, 437);
             ShuffleButton.Name = "ShuffleButton";
             ShuffleButton.Size = new Size(63, 19);
             ShuffleButton.TabIndex = 17;
@@ -230,22 +233,25 @@
             // ArtistNameLabel
             // 
             ArtistNameLabel.AutoSize = true;
-            ArtistNameLabel.Location = new Point(157, 121);
+            ArtistNameLabel.Font = new Font("Segoe UI", 7F);
+            ArtistNameLabel.Location = new Point(112, 330);
+            ArtistNameLabel.MaximumSize = new Size(100, 15);
             ArtistNameLabel.Name = "ArtistNameLabel";
-            ArtistNameLabel.Size = new Size(0, 15);
+            ArtistNameLabel.Size = new Size(0, 12);
             ArtistNameLabel.TabIndex = 19;
+            ArtistNameLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // AlbumPictureBox
             // 
-            AlbumPictureBox.Location = new Point(244, 47);
+            AlbumPictureBox.Location = new Point(130, 77);
             AlbumPictureBox.Name = "AlbumPictureBox";
-            AlbumPictureBox.Size = new Size(100, 50);
+            AlbumPictureBox.Size = new Size(244, 235);
             AlbumPictureBox.TabIndex = 20;
             AlbumPictureBox.TabStop = false;
             // 
             // BackwardButton
             // 
-            BackwardButton.Location = new Point(44, 142);
+            BackwardButton.Location = new Point(64, 344);
             BackwardButton.Name = "BackwardButton";
             BackwardButton.Size = new Size(38, 23);
             BackwardButton.TabIndex = 21;
@@ -255,7 +261,7 @@
             // 
             // FastFowardButton
             // 
-            FastFowardButton.Location = new Point(378, 143);
+            FastFowardButton.Location = new Point(390, 345);
             FastFowardButton.Name = "FastFowardButton";
             FastFowardButton.Size = new Size(36, 23);
             FastFowardButton.TabIndex = 22;
@@ -268,7 +274,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Window;
-            ClientSize = new Size(466, 308);
+            ClientSize = new Size(497, 493);
             Controls.Add(FastFowardButton);
             Controls.Add(BackwardButton);
             Controls.Add(AlbumPictureBox);
@@ -291,6 +297,7 @@
             ForeColor = SystemColors.InfoText;
             Name = "Form1";
             Text = "Media Player";
+            Load += Form1_Load;
             menuStrip2.ResumeLayout(false);
             menuStrip2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).EndInit();

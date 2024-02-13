@@ -130,4 +130,13 @@
   <data name="backward-track" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\backward-track.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="DefaultAlbumArt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DefaultAlbumArt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Hmm" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Hmm.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Hmmm" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Hmmm.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>
