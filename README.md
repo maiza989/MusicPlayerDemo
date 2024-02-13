@@ -32,5 +32,6 @@
 ## Instruction
 - Download the project 
 > - Navigate to the saved location and run "MusicPlayerDemo"
+> - File > Open > Select desired audio file to play
 > - CURRENT DEMO IS NOT UP TO DATE
 
