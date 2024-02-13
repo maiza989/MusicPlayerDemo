@@ -1,6 +1,6 @@
 # Msuic Player
 
-
+CURRENT DEMO IS NOT UP TO DATE
 ## Desicription
 > A fully function Audio play that support most common file formats
 
@@ -31,7 +31,6 @@
   
 ## Instruction
 - Download the project 
-> - Navigate to the saved location and run "MusicPlayerDemo"
-> - File > Open > Select desired audio file to play
-> - CURRENT DEMO IS NOT UP TO DATE
+> - Navigate to the saved location and run "MusicPlayerDemo".
+> - File > Open > Select desired audio file to play.
 
