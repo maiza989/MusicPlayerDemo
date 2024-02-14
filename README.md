@@ -2,7 +2,8 @@
 
 >>>>CURRENT DEMO IS NOT UP TO DATE
 ## Desicription
- A fully function Audio play that support most common file formats
+ This is a simple music player application built using C# and .NET, leveraging the NAudio and TagLib libraries for audio playback and metadata retrieval. It allows users to play audio files, manage playlists, adjust volume, seek tracks, and toggle looping and shuffling functionalities.
+
 
 ## Tools
 - NAudio API
@@ -22,18 +23,14 @@
 - Adjust Audio level as desired.
 - Dark mode/Light mode.
 
-## Pending Features
-- Integration with Online Services.
-- Playlist Management.
-- Audio Visualization.
-- Crossfade/Volume Fading.
-- Mini Player Mode.
-  
 ## Instruction
 - Download the project. 
     - Navigate to the saved location
        - 
-       - Open Builds > Run MusicPlayer.application 
+       - Open Builds > Run MusicPlayer.application
+          - If that does not work
+              - Open the Solution file('MusicPlayerDemo.slm') in Visual Studio
+              - Build the Solution to resotre NuGet packagrs and complie the application
     - Play Audio file
        - 
        - File > Open > Select desired file to play.
@@ -71,3 +68,9 @@
        - Loop Button: If checked loop current track.
        - Sound Level Track bar: Adjust system audio level.
 
+
+## Pending Features
+- Integration with Online Services.
+- Audio Visualization.
+- Crossfade/Volume Fading.
+- Mini Player Mode.
