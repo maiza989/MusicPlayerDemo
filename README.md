@@ -33,7 +33,7 @@
 - Download the project. 
     - Navigate to the saved location
        - 
-       - Open MusicPlayerDemo > Bin > Publish > Run MusicPlayer.application 
+       - Open Builds > Run MusicPlayer.application 
     - Play Audio file
        - 
        - File > Open > Select desired file to play.
