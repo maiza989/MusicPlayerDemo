@@ -33,6 +33,9 @@
             openToolStripMenuItem = new ToolStripMenuItem();
             DarkModeButton = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
+            playListToolStripMenuItem = new ToolStripMenuItem();
+            savePlaylistToolStripMenuItem = new ToolStripMenuItem();
+            loadPlaylistToolStripMenuItem = new ToolStripMenuItem();
             openFileDialog1 = new OpenFileDialog();
             PlayButton = new Button();
             PauseButton = new Button();
@@ -52,6 +55,7 @@
             AlbumPictureBox = new PictureBox();
             BackwardButton = new Button();
             FastFowardButton = new Button();
+            saveFileDialog1 = new SaveFileDialog();
             menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).BeginInit();
@@ -60,7 +64,7 @@
             // 
             // menuStrip2
             // 
-            menuStrip2.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
+            menuStrip2.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, playListToolStripMenuItem });
             menuStrip2.Location = new Point(0, 0);
             menuStrip2.Name = "menuStrip2";
             menuStrip2.Size = new Size(497, 24);
@@ -94,6 +98,27 @@
             exitToolStripMenuItem.Size = new Size(132, 22);
             exitToolStripMenuItem.Text = "Exit";
             exitToolStripMenuItem.Click += exitToolStripMenuItemClick;
+            // 
+            // playListToolStripMenuItem
+            // 
+            playListToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { savePlaylistToolStripMenuItem, loadPlaylistToolStripMenuItem });
+            playListToolStripMenuItem.Name = "playListToolStripMenuItem";
+            playListToolStripMenuItem.Size = new Size(59, 20);
+            playListToolStripMenuItem.Text = "PlayList";
+            // 
+            // savePlaylistToolStripMenuItem
+            // 
+            savePlaylistToolStripMenuItem.Name = "savePlaylistToolStripMenuItem";
+            savePlaylistToolStripMenuItem.Size = new Size(140, 22);
+            savePlaylistToolStripMenuItem.Text = "Save Playlist";
+            savePlaylistToolStripMenuItem.Click += savePlaylistToolStripMenuItem_Click;
+            // 
+            // loadPlaylistToolStripMenuItem
+            // 
+            loadPlaylistToolStripMenuItem.Name = "loadPlaylistToolStripMenuItem";
+            loadPlaylistToolStripMenuItem.Size = new Size(140, 22);
+            loadPlaylistToolStripMenuItem.Text = "Load Playlist";
+            loadPlaylistToolStripMenuItem.Click += loadPlaylistToolStripMenuItem_Click;
             // 
             // openFileDialog1
             // 
@@ -297,7 +322,6 @@
             ForeColor = SystemColors.InfoText;
             Name = "Form1";
             Text = "Media Player";
-            Load += Form1_Load;
             menuStrip2.ResumeLayout(false);
             menuStrip2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).EndInit();
@@ -333,5 +357,9 @@
         private PictureBox AlbumPictureBox;
         private Button BackwardButton;
         private Button FastFowardButton;
+        private SaveFileDialog saveFileDialog1;
+        private ToolStripMenuItem playListToolStripMenuItem;
+        private ToolStripMenuItem savePlaylistToolStripMenuItem;
+        private ToolStripMenuItem loadPlaylistToolStripMenuItem;
     }
 }

@@ -26,6 +26,8 @@ using NAudio.Gui;
 using TagLib;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using File = System.IO.File;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 
 
@@ -205,7 +207,7 @@ namespace MusicPlayerDemo
 
             if (image.Width > image.Height)
             {
-                targetWidth = size.Width;                                               
+                targetWidth = size.Width;
                 targetHeight = (int)(size.Width / aspectRatio);
             }
             else
@@ -240,7 +242,6 @@ namespace MusicPlayerDemo
         private void UpdatePlaylistCountLabel()
         {
 
-
             playlistCountLabel.Text = "Playlist Count: " + playlist.Count.ToString();               // Update the label to display the number of audio files in the playlist
 
         }// end of UpdatePlaylistCountLabel
@@ -273,6 +274,22 @@ namespace MusicPlayerDemo
             }
 
         }// end of UpdateVolume
+
+        private void UpdateUI()
+        {
+            // Update the ComboBox with the playlist
+            UpdatePlaylistComboBox(currentTrackIndex);
+            currentTrackIndex = playlist.Count - 1;
+
+            if (playlist.Count > 0)
+            {
+                FetchTrackInfo(playlist[currentTrackIndex]);            // Set the label text to the selected file name
+            }
+
+            UpdatePlaylistCountLabel();
+            UpdateNextPreviousButtons();
+            PlayCurrentTrack();
+        }
         private void VolumeTrackBarScroll(object sender, EventArgs e)
         {
 
@@ -485,9 +502,68 @@ namespace MusicPlayerDemo
              ArtistNameLabel.ForeColor = SystemColors.ControlText;
              DurationLabel.ForeColor = SystemColors.ControlText;
             */
-        }
+        }// end of SetLightMode
+
+        private void CreatePlaylist()                                                   // Method to create a new playlist
+        {
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Playlist Files (*.m3u)|*.m3u";
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string playlistName = saveFileDialog.FileName;
+                // You can save the playlist name or do further processing here
+            }
+
+        }// end of CreatePlaylist
 
 
+        private void SavePlaylist()                                                     // Method to save the current playlist
+        {
+
+            if (playlist.Count == 0)
+            {
+                MessageBox.Show("Playlist is empty. Add tracks to save.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Playlist Files (*.m3u)|*.m3u";
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string playlistFilePath = saveFileDialog.FileName;
+                File.WriteAllLines(playlistFilePath, playlist);
+            }
+
+        }// end of SavePlaylist
+
+
+        private void LoadPlaylist()                                                     // Method to load a playlist
+        {
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Playlist Files (*.m3u)|*.m3u";
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string playlistFilePath = openFileDialog.FileName;
+                playlist.Clear();
+                playlist.AddRange(File.ReadAllLines(playlistFilePath));
+                // You can do further processing with the loaded playlist here
+            }
+
+        }// end of LoadPlaylist
+
+        /*private void RemoveTracksFromPlaylist()
+        {
+            // Example: Remove selected tracks from the playlist
+            foreach (int selectedIndex in PlayListListBox.SelectedIndices)
+            {
+                playlist.RemoveAt(selectedIndex);
+            }
+            // Update UI or perform other actions after removing tracks
+        }*/
 
         /*private async Task FadeOutVolume()
         {
@@ -522,20 +598,7 @@ namespace MusicPlayerDemo
                         playlist.Add(filePath);                             // Add the selected file to the playlist
                     }
                 }
-
-                // Update the ComboBox with the playlist
-                UpdatePlaylistComboBox(currentTrackIndex);
-                currentTrackIndex = playlist.Count - 1;
-
-                if (playlist.Count > 0)
-                {
-                    FetchTrackInfo(playlist[currentTrackIndex]);            // Set the label text to the selected file name
-                }
-
-                UpdatePlaylistCountLabel();
-                UpdateNextPreviousButtons();
-                PlayCurrentTrack();
-
+                UpdateUI();                                                 // Call to update UI 
             }
         }// end of openToolStripMenuItemClick
         private void exitToolStripMenuItemClick(object sender, EventArgs e)
@@ -667,8 +730,15 @@ namespace MusicPlayerDemo
             }
         }// end of FastFowardButtonClick
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void savePlaylistToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            SavePlaylist();
+        }
+
+        private void loadPlaylistToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadPlaylist();
+            UpdateUI();
 
         }
     }// end of partial call Form1
