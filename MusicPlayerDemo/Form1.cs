@@ -4,11 +4,7 @@
  * 
  * ---
  * ## DONE
- * Theme Customization: Allow users to choose different themes or customize the appearance of the application
- * ---
- * Show Album cover.
- * ---
- * Track Fast foward and backward: Allow users to fast foward the audio by 15 seconds or backward by 15 seconds. 
+ * 
  * ---
  * ## WAIT LIST
  * Volume Fading:
