@@ -30,8 +30,6 @@ using File = System.IO.File;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 
-
-
 namespace MusicPlayerDemo
 {
     public partial class Form1 : Form
@@ -110,13 +108,13 @@ namespace MusicPlayerDemo
             {
                 if (audioFileReader != null)
                 {
-                    // Stop and dispose of the current resources
+                                                                                                // Stop and dispose of the current resources
                     wavePlayer.Stop();
                     wavePlayer.Dispose();
                     audioFileReader.Dispose();
                     trackBarUpdateTimer.Stop();
                 }
-                // Initialize new resources  
+                                                                                                // Initialize new resources  
                 audioFileReader = new AudioFileReader(playlist[currentTrackIndex]);
                 volumeStream = new WaveChannel32(audioFileReader);                              // Wrap AudioFileReader in WaveChannel32
                 wavePlayer = new WaveOut();
@@ -138,7 +136,7 @@ namespace MusicPlayerDemo
                 }
                 wavePlayer.Play();
 
-                // Initialize the default playback device
+                                                                                                                                 // Initialize the default playback device
                 MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
                 defaultPlaybackDevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
                 trackBar.Maximum = (int)audioFileReader.TotalTime.TotalSeconds;                                                  // Set the maximum value of the TrackBar to the total duration of the audio file
@@ -156,13 +154,11 @@ namespace MusicPlayerDemo
             try
             {
 
-                TagLib.File file = TagLib.File.Create(filePath);                             // load audio file
-
-                //extract the artist name from metadata
+                TagLib.File file = TagLib.File.Create(filePath);                                        // load audio file
+                                                                                                        // extract the artist name from metadata
                 string artist = file.Tag.FirstPerformer;
                 string title = file.Tag.Title;
-
-                // conditonal operation to check if the artist or title are null/empty.
+                                                                                                        // conditonal operation to check if the artist or title are null/empty.
                 ArtistNameLabel.TextAlign = ContentAlignment.MiddleCenter;
                 ArtistNameLabel.Text = string.IsNullOrEmpty(artist) ? "Unknown" : artist;
                 selectedFileLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -183,9 +179,8 @@ namespace MusicPlayerDemo
                 else
                 {
                     Console.WriteLine("No Image was found");
-                    AlbumPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;                         // No album cover is found , set it to defualt image
+                    AlbumPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;                          // No album cover is found , set it to defualt image
                     AlbumPictureBox.Image = Properties.Resources.ResourceManager.GetObject("Hmmm") as Image;
-
                 }
             }
             catch (Exception ex)
@@ -217,23 +212,20 @@ namespace MusicPlayerDemo
             }
 
             Bitmap resizedImage = new Bitmap(targetWidth, targetHeight);                   // Create a new bitmap with the calculated target width and height       
-
             using (Graphics graphics = Graphics.FromImage(resizedImage))
             {
                 graphics.DrawImage(image, 0, 0, targetWidth, targetHeight);                // Use Graphics object to draw the original image onto the resized bitmap
             }
-
             return resizedImage;
+
         }// end of ResizeImage
 
         private void FetchSystemVolumeLevel()
         {
-
-            // Fetch and set the default system audio volume
+                                                                                                                                    // Fetch and set the default system audio volume
             defaultPlaybackDevice = (new MMDeviceEnumerator()).GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
             float defaultVolume = defaultPlaybackDevice.AudioEndpointVolume.MasterVolumeLevelScalar;
-
-            // Set the initial value of the VolumeTrackBar based on the default system volume
+                                                                                                                                    // Set the initial value of the VolumeTrackBar based on the default system volume
             int trackBarValue = (int)(defaultVolume * 100);
             VolumeTrackBar.Value = trackBarValue;
 
@@ -248,8 +240,7 @@ namespace MusicPlayerDemo
 
         private void UpdateNextPreviousButtons()
         {
-
-            // Enable/disable next/previous buttons based on the current track index
+                                                                                                    // Enable/disable next/previous buttons based on the current track index
             NextButton.Enabled = currentTrackIndex < playlist.Count - 1;
             PreviousButton.Enabled = currentTrackIndex > 0;
 
@@ -277,7 +268,7 @@ namespace MusicPlayerDemo
 
         private void UpdateUI()
         {
-            // Update the ComboBox with the playlist
+                                                                        // Update the ComboBox with the playlist
             UpdatePlaylistComboBox(currentTrackIndex);
             currentTrackIndex = playlist.Count - 1;
 
@@ -289,10 +280,9 @@ namespace MusicPlayerDemo
             UpdatePlaylistCountLabel();
             UpdateNextPreviousButtons();
             PlayCurrentTrack();
-        }
+        } // end of UpdateUI
         private void VolumeTrackBarScroll(object sender, EventArgs e)
         {
-
 
             float volume = VolumeTrackBar.Value / 100f;                                             // Calculate the volume from the trackbar value (0 to 100)
             UpdateVolume(volume);
@@ -302,8 +292,7 @@ namespace MusicPlayerDemo
         private void PlaylistComboBoxSelectedIndexChanged(object sender, EventArgs e)
         {
 
-            // Handle selection change in the ComboBox
-            int selectedIndex = playlistComboBox.SelectedIndex;
+            int selectedIndex = playlistComboBox.SelectedIndex;                                     // Handle selection change in the ComboBox
 
             if (selectedIndex >= 0 && selectedIndex < playlist.Count)
             {
@@ -326,11 +315,10 @@ namespace MusicPlayerDemo
 
             if (audioFileReader != null && wavePlayer.PlaybackState == PlaybackState.Playing)
             {
-                // Update the TrackBar position based on the audio playback position
+                                                                                                    // Update the TrackBar position based on the audio playback position
                 int currentPosition = (int)(audioFileReader.CurrentTime.TotalSeconds);
                 trackBar.Value = currentPosition;
-
-                // Update the DurationLabel to count down
+                                                                                                    // Update the DurationLabel to count down
                 TimeSpan remainingTime = audioFileReader.TotalTime - audioFileReader.CurrentTime;
                 DurationLabel.Text = $"{remainingTime.Hours:D2}:{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
 
@@ -345,7 +333,7 @@ namespace MusicPlayerDemo
 
         private void SeekingTrackBarScroll(object sender, EventArgs e)
         {
-            // Calculate the position to seek to based on the TrackBar value
+                                                                                                                                    // Calculate the position to seek to based on the TrackBar value
             if (audioFileReader != null)
             {
 
@@ -357,11 +345,11 @@ namespace MusicPlayerDemo
                         wavePlayer.Pause();                                                                                         // Pause playback while seeking to avoid audio glitches
                     }
 
-                    // Seek to the desired position
+                                                                                                                                    // Seek to the desired position
                     TimeSpan newPosition = TimeSpan.FromSeconds(trackBar.Value);
                     audioFileReader.CurrentTime = newPosition;
 
-                    isSeeking = true;                                                   // set seeking flag to true
+                    isSeeking = true;                                                                                               // set seeking flag to true
                 }
             }
         }// end of SeekingTrackBarScroll
@@ -386,6 +374,7 @@ namespace MusicPlayerDemo
                 do
                 {
                     nextIndex = random.Next(0, playlist.Count);                         // Choose a random track index different from the current one
+
                 } while (nextIndex == currentTrackIndex);
 
                 currentTrackIndex = nextIndex;
@@ -410,7 +399,6 @@ namespace MusicPlayerDemo
                     Console.WriteLine("Playback stopped with exception: " + e.Exception.Message);           // If the playback stopped due to an exception, handle it here
                 }
                 PlayCurrentTrack();
-
             }
 
         }// end of LoopCUrrentTrack
@@ -615,7 +603,6 @@ namespace MusicPlayerDemo
             {
                 PlayCurrentTrack();
             }
-
         }//end of PlayButtonClick
 
         private void PauseButtonClick(object sender, EventArgs e)
@@ -739,7 +726,6 @@ namespace MusicPlayerDemo
         {
             LoadPlaylist();
             UpdateUI();
-
         }
     }// end of partial call Form1
 }// end of namespace
