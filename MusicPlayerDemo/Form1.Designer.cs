@@ -56,6 +56,7 @@
             BackwardButton = new Button();
             FastFowardButton = new Button();
             saveFileDialog1 = new SaveFileDialog();
+            removeTrackToolStripMenuItem = new ToolStripMenuItem();
             menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)VolumeTrackBar).BeginInit();
@@ -101,7 +102,7 @@
             // 
             // playListToolStripMenuItem
             // 
-            playListToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { savePlaylistToolStripMenuItem, loadPlaylistToolStripMenuItem });
+            playListToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { savePlaylistToolStripMenuItem, loadPlaylistToolStripMenuItem, removeTrackToolStripMenuItem });
             playListToolStripMenuItem.Name = "playListToolStripMenuItem";
             playListToolStripMenuItem.Size = new Size(59, 20);
             playListToolStripMenuItem.Text = "PlayList";
@@ -109,14 +110,14 @@
             // savePlaylistToolStripMenuItem
             // 
             savePlaylistToolStripMenuItem.Name = "savePlaylistToolStripMenuItem";
-            savePlaylistToolStripMenuItem.Size = new Size(140, 22);
+            savePlaylistToolStripMenuItem.Size = new Size(180, 22);
             savePlaylistToolStripMenuItem.Text = "Save Playlist";
             savePlaylistToolStripMenuItem.Click += savePlaylistToolStripMenuItem_Click;
             // 
             // loadPlaylistToolStripMenuItem
             // 
             loadPlaylistToolStripMenuItem.Name = "loadPlaylistToolStripMenuItem";
-            loadPlaylistToolStripMenuItem.Size = new Size(140, 22);
+            loadPlaylistToolStripMenuItem.Size = new Size(180, 22);
             loadPlaylistToolStripMenuItem.Text = "Load Playlist";
             loadPlaylistToolStripMenuItem.Click += loadPlaylistToolStripMenuItem_Click;
             // 
@@ -294,6 +295,13 @@
             FastFowardButton.UseVisualStyleBackColor = true;
             FastFowardButton.Click += FastFowardButtonClick;
             // 
+            // removeTrackToolStripMenuItem
+            // 
+            removeTrackToolStripMenuItem.Name = "removeTrackToolStripMenuItem";
+            removeTrackToolStripMenuItem.Size = new Size(180, 22);
+            removeTrackToolStripMenuItem.Text = "Remove Track ";
+            removeTrackToolStripMenuItem.Click += removeTrackToolStripMenuItem_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -361,5 +369,6 @@
         private ToolStripMenuItem playListToolStripMenuItem;
         private ToolStripMenuItem savePlaylistToolStripMenuItem;
         private ToolStripMenuItem loadPlaylistToolStripMenuItem;
+        private ToolStripMenuItem removeTrackToolStripMenuItem;
     }
 }
