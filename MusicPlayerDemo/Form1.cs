@@ -37,6 +37,7 @@ namespace MusicPlayerDemo
         private const int fadingDurationMilliseconds = 1000;        // Adjust fading duration as needed
         private const int fadingIntervalMilliseconds = 100;         // Adjust fading interval as needed
         private const int fadingThresholdMilliseconds = 1000;       // Threshold to start fading (1 second before the end)
+        private const double endAudioThreshold = 200; // a thershold for audio
 
 
         private IWavePlayer wavePlayer;                             // audio player
@@ -116,20 +117,7 @@ namespace MusicPlayerDemo
                 wavePlayer = new WaveOut();
                 wavePlayer.Init(audioFileReader);
 
-                /*
-                 * An iff statement to check if the loop or shuffle button is checked
-                 * If so subscribe to the method of the buttoned check and fetch the track infromation.
-                 */
-                if (isLooping)
-                {
-                    wavePlayer.PlaybackStopped += LoopCurrentTrack;
-                    FetchTrackInfo(playlist[currentTrackIndex]);
-                }
-                else if (isShuffle && playlist.Count > 1)
-                {
-                    wavePlayer.PlaybackStopped += ShuffleNextTrack;
-                    FetchTrackInfo(playlist[currentTrackIndex]);
-                }
+                CheckForLoopShuffle();
                 wavePlayer.Play();
 
                 // Initialize the default playback device
@@ -139,7 +127,9 @@ namespace MusicPlayerDemo
                 TimeSpan totalDuration = audioFileReader.TotalTime;                                                              // Set the durationLabel text based on the total duration of the audio file
                 DurationLabel.Text = $"{totalDuration.Hours:D2}:{totalDuration.Minutes:D2}:{totalDuration.Seconds:D2}";
 
+                trackBarUpdateTimer.Enabled = true;
                 trackBarUpdateTimer.Start();
+                
 
             }
         }// end of PlayCurrentTrack
@@ -308,9 +298,11 @@ namespace MusicPlayerDemo
 
         private void TrackBarUpdateTimerTick(object sender, EventArgs e)
         {
+           
             try
             {
 
+                trackBarUpdateTimer.Start();
                 if (audioFileReader != null && wavePlayer.PlaybackState == PlaybackState.Playing)
                 {
                     // Update the TrackBar position based on the audio playback position
@@ -320,18 +312,26 @@ namespace MusicPlayerDemo
                     TimeSpan remainingTime = audioFileReader.TotalTime - audioFileReader.CurrentTime;
                     DurationLabel.Text = $"{remainingTime.Hours:D2}:{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
 
-                    if (remainingTime.TotalSeconds <= 0)
+                    if (remainingTime.TotalMilliseconds <= endAudioThreshold)                                                       // Audio End Checks here
                     {
                         trackBarUpdateTimer.Stop();
                         wavePlayer.Stop();
-                        MoveToNextTrack();
+                        if(isLooping || isShuffle)
+                        {
+                             CheckForLoopShuffle();
+                        }
+                        else
+                        {
+                            UpdateUI();
+                        }
+                        
                     }
 
                 }
             }catch(Exception ex)
             {
                 MessageBox.Show("test");
-                MoveToNextTrack();
+               // MoveToNextTrack();
             }
 
         }// end of TrackBarUpdateTimerTick
@@ -397,16 +397,31 @@ namespace MusicPlayerDemo
         {
 
             if (isLooping)
-            {
-
-                if (e.Exception != null)
-                {
-                    Console.WriteLine("Playback stopped with exception: " + e.Exception.Message);           // If the playback stopped due to an exception, handle it here
-                }
+            {                  
                 PlayCurrentTrack();
             }
 
         }// end of LoopCUrrentTrack
+
+        /*
+        * An iff statement to check if the loop or shuffle button is checked
+        * If so subscribe to the method of the buttoned check and fetch the track infromation.
+        */
+        private void CheckForLoopShuffle()
+        {
+            if (isLooping)
+            {
+                wavePlayer.PlaybackStopped += LoopCurrentTrack;
+                FetchTrackInfo(playlist[currentTrackIndex]);
+                
+            }
+            else if (isShuffle && playlist.Count > 1)
+            {
+                wavePlayer.PlaybackStopped += ShuffleNextTrack;
+                FetchTrackInfo(playlist[currentTrackIndex]);
+            }
+
+        }
 
         private void LoopingCheckBoxCheckedChanged(object sender, EventArgs e)
         {
