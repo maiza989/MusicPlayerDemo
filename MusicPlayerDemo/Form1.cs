@@ -130,7 +130,6 @@ namespace MusicPlayerDemo
                 trackBarUpdateTimer.Enabled = true;
                 trackBarUpdateTimer.Start();
                 
-
             }
         }// end of PlayCurrentTrack
 
@@ -149,7 +148,6 @@ namespace MusicPlayerDemo
                 ArtistNameLabel.Text = string.IsNullOrEmpty(artist) ? "Unknown" : artist;
                 selectedFileLabel.TextAlign = ContentAlignment.MiddleCenter;
                 selectedFileLabel.Text = string.IsNullOrEmpty(title) ? System.IO.Path.GetFileNameWithoutExtension(filePath) : title;
-
 
                 if (file.Tag.Pictures.Length > 0)                                                       // Extract album art if available
                 {
@@ -470,35 +468,48 @@ namespace MusicPlayerDemo
 
         private void SavePlaylist()                                                     // Method to save the current playlist
         {
-
-            if (playlist.Count == 0)
+            try
             {
-                MessageBox.Show("Playlist is empty. Add tracks to save.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+
+                if (playlist.Count == 0)
+                {
+                    MessageBox.Show("Playlist is empty. Add tracks to save.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Playlist Files (*.m3u)|*.m3u";
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string playlistFilePath = saveFileDialog.FileName;
+                    File.WriteAllLines(playlistFilePath, playlist);
+                }
             }
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Playlist Files (*.m3u)|*.m3u";
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            catch(Exception ex)
             {
-                string playlistFilePath = saveFileDialog.FileName;
-                File.WriteAllLines(playlistFilePath, playlist);
+                MessageBox.Show($"Error while saving playlist!: {ex.Message}");
             }
 
         }// end of SavePlaylist
 
         private void LoadPlaylist()                                                     // Method to load a playlist
         {
-
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Playlist Files (*.m3u)|*.m3u";
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            try
             {
-                string playlistFilePath = openFileDialog.FileName;
-                playlist.Clear();
-                playlist.AddRange(File.ReadAllLines(playlistFilePath));
-                // You can do further processing with the loaded playlist here
+
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "Playlist Files (*.m3u)|*.m3u";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string playlistFilePath = openFileDialog.FileName;
+                    playlist.Clear();
+                    playlist.AddRange(File.ReadAllLines(playlistFilePath));
+                    // You can do further processing with the loaded playlist here
+                }
+            }catch(Exception ex)
+            {
+                MessageBox.Show($"Error while loading playlist!: {ex.Message}");
             }
 
         }// end of LoadPlaylist
@@ -523,33 +534,45 @@ namespace MusicPlayerDemo
                 }
             }catch(Exception ex)
             {
-                MessageBox.Show($"Invaild track number. Moving to the Next track");
+                MessageBox.Show($"Error while removng track: Invaild track number. Moving to the Next track. Error: {ex.Message}");
                 MoveToNextTrack();
             }
         }// end of RemoveTracksFromPlaylist
 
         private void MoveToNextTrack()
         {
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;                           // Move to the next track
-            if (playlist.Count > 0)
+            try
             {
-                FetchTrackInfo(playlist[currentTrackIndex]);
-                UpdatePlaylistCountLabel();
-                UpdateNextPreviousButtons();
-                PlayCurrentTrack();
+                currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;                           // Move to the next track
+                if (playlist.Count > 0)
+                {
+                    FetchTrackInfo(playlist[currentTrackIndex]);
+                    UpdatePlaylistCountLabel();
+                    UpdateNextPreviousButtons();
+                    PlayCurrentTrack();
+                }
+            }catch(DivideByZeroException ex)
+            {
+                MessageBox.Show($"Error! No Track in Playlist. Please Add Track! \n- {ex.Message}");
             }
         }// end of MoveToNextTrack
 
         private void MoveToPreviousTrack()
         {
-            currentTrackIndex = (currentTrackIndex - 1 + playlist.Count) % playlist.Count;          // Move to the preivous track
-
-            if (playlist.Count > 0)
+            try
             {
-                FetchTrackInfo(playlist[currentTrackIndex]);
-                UpdatePlaylistCountLabel();
-                UpdateNextPreviousButtons();
-                PlayCurrentTrack();
+                currentTrackIndex = (currentTrackIndex - 1 + playlist.Count) % playlist.Count;          // Move to the preivous track
+
+                if (playlist.Count > 0)
+                {
+                    FetchTrackInfo(playlist[currentTrackIndex]);
+                    UpdatePlaylistCountLabel();
+                    UpdateNextPreviousButtons();
+                    PlayCurrentTrack();
+                }
+            }catch(DivideByZeroException ex)
+            {
+                MessageBox.Show($"Error! No Track in Playlist. Please Add Track! \n- {ex.Message}");   
             }
         }
         /*private async Task FadeOutVolume()
@@ -602,10 +625,16 @@ namespace MusicPlayerDemo
 
         private void PlayButtonClick(object sender, EventArgs e)
         {
-            wavePlayer.Play();
-            if (wavePlayer.PlaybackState == PlaybackState.Stopped)
+            try
             {
-                PlayCurrentTrack();
+                wavePlayer.Play();
+                if (wavePlayer.PlaybackState == PlaybackState.Stopped)
+                {
+                    PlayCurrentTrack();
+                }
+            }catch( Exception ex )
+            {
+                MessageBox.Show($"Error! No Track in Playlist. Please Add Track! \n- {ex.Message}");
             }
         }//end of PlayButtonClick
 
